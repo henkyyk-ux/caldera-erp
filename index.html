@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Caldera Coffee & Cosmology ERP</title>
+    <title>Caldera Coffee - P&L Management System</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -11,7 +11,7 @@
             --gold: #D4AF37; --gold-light: #E8C75A;
             --dark-bg: #0F0F0F; --dark-secondary: #1a1a1a; --dark-tertiary: #2a2a2a;
             --text-primary: #FFFFFF; --text-secondary: #B0B0B0;
-            --success: #6BBE7F; --danger: #E74C3C; --warning: #F39C12; --info: #3498DB;
+            --success: #6BBE7F; --danger: #E74C3C; --warning: #F39C12;
             --border: rgba(212, 175, 55, 0.1); --border-gold: rgba(212, 175, 55, 0.3);
         }
         body { font-family: 'Poppins', sans-serif; background: var(--dark-bg); color: var(--text-primary); }
@@ -39,16 +39,11 @@
         .btn-primary { background: var(--gold); color: #000; }
         .btn-secondary { background: var(--dark-tertiary); color: #fff; border: 1px solid var(--border-gold); }
         .btn-danger { background: rgba(231, 76, 60, 0.2); color: var(--danger); border: 1px solid var(--danger); }
-        .btn-success { background: rgba(107, 190, 127, 0.2); color: var(--success); border: 1px solid var(--success); }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 10px; border-bottom: 1px solid var(--border); font-size: 12px; text-align: left; }
         th { color: var(--gold); text-transform: uppercase; font-size: 10px; }
         .text-right { text-align: right; } .text-center { text-align: center; }
         .amount { font-family: 'Courier New', monospace; font-weight: 600; color: var(--gold); }
-        .badge { padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; }
-        .badge-lunas { background: rgba(107, 190, 127, 0.2); color: var(--success); }
-        .badge-parsial { background: rgba(243, 156, 18, 0.2); color: var(--warning); }
-        .badge-unpaid { background: rgba(231, 76, 60, 0.2); color: var(--danger); }
         .pl-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
         .pl-row.total { font-weight: 700; background: rgba(212, 175, 55, 0.08); padding: 10px; border-radius: 4px; }
         .pl-row.net-profit { background: rgba(107, 190, 127, 0.15); padding: 12px; font-weight: 700; border-radius: 4px; }
@@ -60,16 +55,13 @@
         .loading.show { display: flex; }
         .spinner { border: 3px solid rgba(212, 175, 55, 0.2); border-top: 3px solid var(--gold); border-radius: 50%; width: 35px; height: 35px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 500; justify-content: center; align-items: center; }
-        .modal.show { display: flex; }
-        .modal-body { background: var(--dark-secondary); border: 1px solid var(--border-gold); padding: 20px; border-radius: 8px; width: 350px; }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
     <header>
         <div class="container">
-            <div class="logo">☕ CALDERA & COSMOLOGY ERP</div>
+            <div class="logo">☕ CALDERA COFFEE ERP</div>
             <div class="period-selector">
                 <select id="monthSelect" onchange="loadData()">
                     <option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option>
@@ -85,42 +77,24 @@
     </header>
 
     <div class="container">
-        <div class="alert alert-success" id="successAlert"></div>
-        <div class="alert alert-error" id="errorAlert"></div>
+        <div class="alert alert-success" id="successAlert">Berhasil</div>
+        <div class="alert alert-error" id="errorAlert">Gagal</div>
 
         <div class="metrics-grid">
-            <div class="metric-card">
-                <div class="metric-label">Total Cash Revenue</div>
-                <div class="metric-value" id="totalRevenue">Rp 0</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">HPP Target (70%)</div>
-                <div class="metric-value" id="cogsTarget">Rp 0</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Beban Waste / Varians Bar</div>
-                <div class="metric-value" id="cogsVariance" style="color: var(--warning);">Rp 0</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Piutang B2B Outstanding</div>
-                <div class="metric-value" id="outstandingAR" style="color: var(--info);">Rp 0</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Net Profit Bersih</div>
-                <div class="metric-value" id="netProfit">Rp 0</div>
-            </div>
+            <div class="metric-card"><div class="metric-label">Total Revenue</div><div class="metric-value" id="totalRevenue">Rp 0</div></div>
+            <div class="metric-card"><div class="metric-label">HPP Target (70%)</div><div class="metric-value" id="cogsTarget">Rp 0</div></div>
+            <div class="metric-card"><div class="metric-label">Beban Waste / Varians</div><div class="metric-value" id="cogsVariance" style="color: var(--warning);">Rp 0</div></div>
+            <div class="metric-card"><div class="metric-label">Net Profit Bersih</div><div class="metric-value" id="netProfit">Rp 0</div></div>
         </div>
 
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('dashboard', event)">📊 Dashboard</button>
-            <button class="tab-btn" onclick="switchTab('invoicing', event); loadInvoices();">🧾 Invoice & Piutang (AR)</button>
             <button class="tab-btn" onclick="switchTab('pos', event)">📥 Upload ESB POS</button>
             <button class="tab-btn" onclick="switchTab('inventory', event); loadInventory();">📦 Inventaris & BOM</button>
             <button class="tab-btn" onclick="switchTab('expenses', event)">💸 OPEX</button>
             <button class="tab-btn" onclick="switchTab('report', event); refreshReport();">📄 Laporan P&L</button>
         </div>
 
-        <!-- TAB DASHBOARD -->
         <div class="tab-content active" id="dashboard-tab">
             <div class="card">
                 <div class="card-title">Struktur OPEX Bulanan</div>
@@ -131,31 +105,6 @@
             </div>
         </div>
 
-        <!-- TAB INVOICING -->
-        <div class="tab-content" id="invoicing-tab">
-            <div class="card">
-                <div class="card-title">Terbitkan Invoice B2B / Inter-Company</div>
-                <div class="form-row">
-                    <div class="form-group"><label>Nama Customer</label><input type="text" id="invCustomer"></div>
-                    <div class="form-group"><label>Total Tagihan (Rp)</label><input type="number" id="invTotalAmount"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Tanggal Invoice</label><input type="date" id="invDate"></div>
-                    <div class="form-group"><label>Jatuh Tempo</label><input type="date" id="invDueDate"></div>
-                </div>
-                <div class="form-group"><label>Catatan</label><input type="text" id="invNotes"></div>
-                <button class="btn-primary" onclick="submitInvoice()">Simpan Invoice</button>
-            </div>
-            <div class="card">
-                <div class="card-title">Daftar Piutang Customer</div>
-                <table>
-                    <thead><tr><th>ID</th><th>Customer</th><th>Jatuh Tempo</th><th class="text-right">Total</th><th class="text-right">Sisa</th><th class="text-center">Status</th><th class="text-center">Aksi</th></tr></thead>
-                    <tbody id="invoiceTableBody"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- TAB POS -->
         <div class="tab-content" id="pos-tab">
             <div class="card">
                 <div class="card-title">Upload Rekap POS ESB</div>
@@ -168,7 +117,6 @@
             </div>
         </div>
 
-        <!-- TAB INVENTORY -->
         <div class="tab-content" id="inventory-tab">
             <div class="card">
                 <div class="card-title">Sisa Stok Bahan Baku</div>
@@ -179,7 +127,6 @@
             </div>
         </div>
 
-        <!-- TAB EXPENSES -->
         <div class="tab-content" id="expenses-tab">
             <div class="card">
                 <div class="card-title">Input OPEX / Pengeluaran</div>
@@ -219,32 +166,16 @@
             </div>
         </div>
 
-        <!-- TAB REPORT -->
         <div class="tab-content" id="report-tab">
             <div class="card">
                 <div class="card-title text-center">LAPORAN LABA RUGI DUAL-TRACK</div>
-                <div class="pl-row"><span>1a. Revenue Retail (POS ESB)</span><span id="repPosRevenue" class="amount">Rp 0</span></div>
-                <div class="pl-row"><span>1b. Realisasi Pelunasan Piutang B2B</span><span id="repB2bRevenue" class="amount">Rp 0</span></div>
-                <div class="pl-row total"><span>TOTAL CASH REVENUE</span><span id="repRevenue" class="amount">Rp 0</span></div>
+                <div class="pl-row total"><span>1. TOTAL REVENUE</span><span id="repRevenue" class="amount">Rp 0</span></div>
                 <div class="pl-row"><span>HPP Target (Kunci 70%)</span><span id="repCogsTarget" class="amount">Rp 0</span></div>
                 <div class="pl-row total"><span>2. TARGET GROSS PROFIT (30%)</span><span id="repGrossProfit" class="amount">Rp 0</span></div>
                 <div id="repOpexRows"></div>
                 <div class="pl-row"><span>Subtotal OPEX</span><span id="repTotalOpex" class="amount">Rp 0</span></div>
-                <div class="pl-row"><span>Beban Pemborosan Bar (Varians)</span><span id="repVariance" class="amount" style="color: var(--warning);">Rp 0</span></div>
+                <div class="pl-row"><span>Beban Waste / Varians Bar</span><span id="repVariance" class="amount" style="color: var(--warning);">Rp 0</span></div>
                 <div class="pl-row net-profit"><span>3. NET OPERATING PROFIT</span><span id="repNetProfit">Rp 0</span></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL PELUNASAN -->
-    <div class="modal" id="paymentModal">
-        <div class="modal-body">
-            <div class="card-title">Pelunasan Piutang</div>
-            <input type="hidden" id="payModalInvoiceId">
-            <div class="form-group"><label>Nominal Pembayaran (Rp)</label><input type="number" id="payModalAmount"></div>
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button class="btn-primary" style="flex: 1;" onclick="submitPayment()">Simpan</button>
-                <button class="btn-secondary" onclick="closePaymentModal()">Batal</button>
             </div>
         </div>
     </div>
@@ -252,7 +183,7 @@
     <div class="loading" id="loading"><div class="spinner"></div></div>
 
     <script>
-        // PASTEKAN URL WEB APP RESULT DARI DEPLOYMENT GOOGLE APPS SCRIPT ANDA DI SINI
+        // MASUKKAN URL WEB APP DEPLOYMENT GOOGLE APPS SCRIPT ANDA DI SINI
         const API_URL = 'https://script.google.com/macros/s/AKfycbx_GANTI_DENGAN_DEPLOYMENT_ID_ANDA/exec';
 
         let posPayload = [];
@@ -272,23 +203,18 @@
             evt.target.classList.add('active');
         }
 
-        // --- HANDLER INTEGRASI API DENGAN SOLUSI CORS ---
         async function apiGet(action, params = {}) {
             showLoading(true);
             try {
                 const query = new URLSearchParams({ action, ...params }).toString();
-                const res = await fetch(`${API_URL}?${query}`, {
-                    method: 'GET',
-                    redirect: 'follow'
-                });
-                if (!res.ok) throw new Error(`HTTP Error Status: ${res.status}`);
+                const res = await fetch(`${API_URL}?${query}`);
                 const json = await res.json();
                 showLoading(false);
                 if (json.status === 'error') throw new Error(json.message);
                 return json.data;
             } catch (err) {
                 showLoading(false);
-                notify('Koneksi Gagal: ' + err.message + '. Pastikan API_URL diisi dengan URL Deployment Apps Script aktif.', 'error');
+                notify(err.message, 'error');
                 throw err;
             }
         }
@@ -296,26 +222,22 @@
         async function apiPost(action, body = {}) {
             showLoading(true);
             try {
-                // Tipe text/plain digunakan untuk menghindari Pre-flight OPTIONS CORS check pada GAS
                 const res = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action, ...body }),
-                    redirect: 'follow'
+                    body: JSON.stringify({ action, ...body })
                 });
-                if (!res.ok) throw new Error(`HTTP Error Status: ${res.status}`);
                 const json = await res.json();
                 showLoading(false);
                 if (json.status === 'error') throw new Error(json.message);
                 return json.data;
             } catch (err) {
                 showLoading(false);
-                notify('Koneksi Gagal: ' + err.message, 'error');
+                notify(err.message, 'error');
                 throw err;
             }
         }
 
-        // --- APPLICATION LOGIC ---
         async function loadData() {
             const m = document.getElementById('monthSelect').value;
             const y = document.getElementById('yearSelect').value;
@@ -324,7 +246,6 @@
             document.getElementById('totalRevenue').textContent = formatCurrency(data.revenue);
             document.getElementById('cogsTarget').textContent = formatCurrency(data.cogs_target);
             document.getElementById('cogsVariance').textContent = formatCurrency(data.operational_variance);
-            document.getElementById('outstandingAR').textContent = formatCurrency(data.outstanding_ar);
             document.getElementById('netProfit').textContent = formatCurrency(data.profit);
 
             renderExpenseBreakdown(data.expensesByCategory);
@@ -350,50 +271,6 @@
                     <td class="text-center"><button class="btn-danger" onclick="deleteExpenseRow(${item.rowIndex})">Hapus</button></td>
                 </tr>`;
             });
-        }
-
-        async function loadInvoices() {
-            const invoices = await apiGet('getInvoices');
-            const tbody = document.getElementById('invoiceTableBody');
-            tbody.innerHTML = '';
-            invoices.forEach(inv => {
-                let badgeClass = inv.status === 'LUNAS' ? 'badge-lunas' : (inv.status === 'PARSIAL' ? 'badge-parsial' : 'badge-unpaid');
-                const actionBtn = inv.status !== 'LUNAS' ? `<button class="btn-success" onclick="openPaymentModal('${inv.id}', ${inv.remainingAmount})">Bayar</button>` : 'Selesai';
-                tbody.innerHTML += `<tr>
-                    <td><strong>${inv.id}</strong></td><td>${inv.customer}</td><td>${inv.dueDate}</td>
-                    <td class="text-right amount">${formatCurrency(inv.totalAmount)}</td>
-                    <td class="text-right amount">${formatCurrency(inv.remainingAmount)}</td>
-                    <td class="text-center"><span class="badge ${badgeClass}">${inv.status}</span></td>
-                    <td class="text-center">${actionBtn}</td>
-                </tr>`;
-            });
-        }
-
-        async function submitInvoice() {
-            const customer = document.getElementById('invCustomer').value;
-            const totalAmount = document.getElementById('invTotalAmount').value;
-            const date = document.getElementById('invDate').value;
-            const dueDate = document.getElementById('invDueDate').value;
-            const notes = document.getElementById('invNotes').value;
-
-            await apiPost('createInvoice', { customer, date, dueDate, totalAmount, notes });
-            notify('Invoice berhasil dibuat!');
-            loadInvoices(); loadData();
-        }
-
-        function openPaymentModal(invId, remaining) {
-            document.getElementById('payModalInvoiceId').value = invId;
-            document.getElementById('payModalAmount').value = remaining;
-            document.getElementById('paymentModal').className = 'modal show';
-        }
-        function closePaymentModal() { document.getElementById('paymentModal').className = 'modal'; }
-
-        async function submitPayment() {
-            const invoiceId = document.getElementById('payModalInvoiceId').value;
-            const paymentAmount = document.getElementById('payModalAmount').value;
-            await apiPost('recordPayment', { invoiceId, paymentAmount });
-            notify('Pelunasan dicatat!');
-            closePaymentModal(); loadInvoices(); loadData();
         }
 
         function handleFrontendFileParse(e) {
@@ -463,21 +340,16 @@
             const m = document.getElementById('monthSelect').value;
             const y = document.getElementById('yearSelect').value;
             const data = await apiGet('getData', { bulan: m, tahun: y });
-            document.getElementById('repPosRevenue').textContent = formatCurrency(data.revenue_pos);
-            document.getElementById('repB2bRevenue').textContent = formatCurrency(data.revenue_b2b_paid);
             document.getElementById('repRevenue').textContent = formatCurrency(data.revenue);
             document.getElementById('repCogsTarget').textContent = formatCurrency(data.cogs_target);
-            document.getElementById('repGrossProfit').textContent = formatCurrency(data.gross_profit);
+            document.getElementById('repGrossProfit').textContent = formatCurrency(data.revenue - data.cogs_target);
             document.getElementById('repTotalOpex').textContent = formatCurrency(data.operating_expenses);
             document.getElementById('repVariance').textContent = formatCurrency(data.operational_variance);
             document.getElementById('repNetProfit').textContent = formatCurrency(data.profit);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('expDate').value = today;
-            document.getElementById('invDate').value = today;
-            document.getElementById('invDueDate').value = today;
+            document.getElementById('expDate').value = new Date().toISOString().split('T')[0];
             loadData();
         });
     </script>
