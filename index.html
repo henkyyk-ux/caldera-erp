@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caldera Coffee & Cosmology ERP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --gold: #D4AF37; --gold-light: #E8C75A;
+            --dark-bg: #0F0F0F; --dark-secondary: #1a1a1a; --dark-tertiary: #2a2a2a;
+            --text-primary: #FFFFFF; --text-secondary: #B0B0B0;
+            --success: #6BBE7F; --danger: #E74C3C; --warning: #F39C12; --info: #3498DB;
+            --border: rgba(212, 175, 55, 0.1); --border-gold: rgba(212, 175, 55, 0.3);
+        }
+        body { font-family: 'Poppins', sans-serif; background: var(--dark-bg); color: var(--text-primary); }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        header { background: var(--dark-secondary); border-bottom: 2px solid var(--border-gold); padding: 15px 0; position: sticky; top: 0; z-index: 100; }
+        header .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--gold); font-weight: 700; }
+        .period-selector select { background: var(--dark-tertiary); color: #fff; border: 1px solid var(--border-gold); padding: 6px 10px; border-radius: 4px; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin: 20px 0; }
+        .metric-card { background: var(--dark-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 15px; }
+        .metric-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; }
+        .metric-value { font-size: 24px; font-weight: 700; color: var(--gold); margin: 5px 0; font-family: 'Courier New', monospace; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border); overflow-x: auto; }
+        .tab-btn { padding: 10px 15px; background: none; border: none; color: var(--text-secondary); cursor: pointer; font-weight: 600; font-size: 12px; }
+        .tab-btn.active { color: var(--gold); border-bottom: 2px solid var(--gold); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .card { background: var(--dark-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+        .card-title { font-family: 'Playfair Display', serif; font-size: 18px; margin-bottom: 15px; color: var(--gold-light); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-size: 11px; text-transform: uppercase; margin-bottom: 4px; color: var(--text-secondary); }
+        input, select { width: 100%; padding: 8px 12px; background: var(--dark-tertiary); border: 1px solid var(--border); border-radius: 4px; color: #fff; font-size: 13px; }
+        button { padding: 8px 16px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 11px; text-transform: uppercase; border: none; }
+        .btn-primary { background: var(--gold); color: #000; }
+        .btn-secondary { background: var(--dark-tertiary); color: #fff; border: 1px solid var(--border-gold); }
+        .btn-danger { background: rgba(231, 76, 60, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+        .btn-success { background: rgba(107, 190, 127, 0.2); color: var(--success); border: 1px solid var(--success); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 10px; border-bottom: 1px solid var(--border); font-size: 12px; text-align: left; }
+        th { color: var(--gold); text-transform: uppercase; font-size: 10px; }
+        .text-right { text-align: right; } .text-center { text-align: center; }
+        .amount { font-family: 'Courier New', monospace; font-weight: 600; color: var(--gold); }
+        .badge { padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; }
+        .badge-lunas { background: rgba(107, 190, 127, 0.2); color: var(--success); }
+        .badge-parsial { background: rgba(243, 156, 18, 0.2); color: var(--warning); }
+        .badge-unpaid { background: rgba(231, 76, 60, 0.2); color: var(--danger); }
+        .pl-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+        .pl-row.total { font-weight: 700; background: rgba(212, 175, 55, 0.08); padding: 10px; border-radius: 4px; }
+        .pl-row.net-profit { background: rgba(107, 190, 127, 0.15); padding: 12px; font-weight: 700; border-radius: 4px; }
+        .alert { padding: 10px; border-radius: 4px; margin-bottom: 15px; display: none; font-size: 12px; }
+        .alert.show { display: block; }
+        .alert-success { background: rgba(107, 190, 127, 0.1); color: var(--success); border-left: 4px solid var(--success); }
+        .alert-error { background: rgba(231, 76, 60, 0.1); color: var(--danger); border-left: 4px solid var(--danger); }
+        .loading { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 999; justify-content: center; align-items: center; }
+        .loading.show { display: flex; }
+        .spinner { border: 3px solid rgba(212, 175, 55, 0.2); border-top: 3px solid var(--gold); border-radius: 50%; width: 35px; height: 35px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 500; justify-content: center; align-items: center; }
+        .modal.show { display: flex; }
+        .modal-body { background: var(--dark-secondary); border: 1px solid var(--border-gold); padding: 20px; border-radius: 8px; width: 350px; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">☕ CALDERA & COSMOLOGY ERP</div>
+            <div class="period-selector">
+                <select id="monthSelect" onchange="loadData()">
+                    <option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option>
+                    <option value="4">April</option><option value="5">Mei</option><option value="6">Juni</option>
+                    <option value="7">Juli</option><option value="8" selected>Agustus</option><option value="9">September</option>
+                    <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
+                </select>
+                <select id="yearSelect" onchange="loadData()">
+                    <option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="alert alert-success" id="successAlert"></div>
+        <div class="alert alert-error" id="errorAlert"></div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Total Cash Revenue</div>
+                <div class="metric-value" id="totalRevenue">Rp 0</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">HPP Target (70%)</div>
+                <div class="metric-value" id="cogsTarget">Rp 0</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Beban Waste / Varians Bar</div>
+                <div class="metric-value" id="cogsVariance" style="color: var(--warning);">Rp 0</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Piutang B2B Outstanding</div>
+                <div class="metric-value" id="outstandingAR" style="color: var(--info);">Rp 0</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Net Profit Bersih</div>
+                <div class="metric-value" id="netProfit">Rp 0</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('dashboard', event)">📊 Dashboard</button>
+            <button class="tab-btn" onclick="switchTab('invoicing', event); loadInvoices();">🧾 Invoice & Piutang (AR)</button>
+            <button class="tab-btn" onclick="switchTab('pos', event)">📥 Upload ESB POS</button>
+            <button class="tab-btn" onclick="switchTab('inventory', event); loadInventory();">📦 Inventaris & BOM</button>
+            <button class="tab-btn" onclick="switchTab('expenses', event)">💸 OPEX</button>
+            <button class="tab-btn" onclick="switchTab('report', event); refreshReport();">📄 Laporan P&L</button>
+        </div>
+
+        <!-- TAB DASHBOARD -->
+        <div class="tab-content active" id="dashboard-tab">
+            <div class="card">
+                <div class="card-title">Struktur OPEX Bulanan</div>
+                <table>
+                    <thead><tr><th>Kategori Beban</th><th class="text-right">Nominal</th></tr></thead>
+                    <tbody id="expenseBreakdownBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB INVOICING -->
+        <div class="tab-content" id="invoicing-tab">
+            <div class="card">
+                <div class="card-title">Terbitkan Invoice B2B / Inter-Company</div>
+                <div class="form-row">
+                    <div class="form-group"><label>Nama Customer</label><input type="text" id="invCustomer"></div>
+                    <div class="form-group"><label>Total Tagihan (Rp)</label><input type="number" id="invTotalAmount"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Tanggal Invoice</label><input type="date" id="invDate"></div>
+                    <div class="form-group"><label>Jatuh Tempo</label><input type="date" id="invDueDate"></div>
+                </div>
+                <div class="form-group"><label>Catatan</label><input type="text" id="invNotes"></div>
+                <button class="btn-primary" onclick="submitInvoice()">Simpan Invoice</button>
+            </div>
+            <div class="card">
+                <div class="card-title">Daftar Piutang Customer</div>
+                <table>
+                    <thead><tr><th>ID</th><th>Customer</th><th>Jatuh Tempo</th><th class="text-right">Total</th><th class="text-right">Sisa</th><th class="text-center">Status</th><th class="text-center">Aksi</th></tr></thead>
+                    <tbody id="invoiceTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB POS -->
+        <div class="tab-content" id="pos-tab">
+            <div class="card">
+                <div class="card-title">Upload Rekap POS ESB</div>
+                <input type="file" id="posFileInput" accept=".xlsx, .xls" onchange="handleFrontendFileParse(event)">
+                <div id="posUploadSummary" style="display: none; margin-top: 15px;">
+                    <div class="pl-row"><span>Total Item:</span><strong id="posParsedCount">0</strong></div>
+                    <div class="pl-row"><span>Omzet Terbaca:</span><strong id="posParsedRevenue" class="amount">Rp 0</strong></div>
+                    <button class="btn-primary" style="margin-top: 10px;" onclick="executePosSync()">⚡ Potong Stok BOM & Simpan Omzet</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB INVENTORY -->
+        <div class="tab-content" id="inventory-tab">
+            <div class="card">
+                <div class="card-title">Sisa Stok Bahan Baku</div>
+                <table>
+                    <thead><tr><th>Nama Bahan</th><th>Satuan</th><th>Sisa Stok</th><th class="text-right">Valuasi</th></tr></thead>
+                    <tbody id="inventoryTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB EXPENSES -->
+        <div class="tab-content" id="expenses-tab">
+            <div class="card">
+                <div class="card-title">Input OPEX / Pengeluaran</div>
+                <div class="form-row">
+                    <div class="form-group"><label>Tanggal</label><input type="date" id="expDate"></div>
+                    <div class="form-group">
+                        <label>Kategori</label>
+                        <select id="expCategory">
+                            <option value="Bahan Baku / COGS">Bahan Baku / COGS (Aset Stok)</option>
+                            <option value="Supplies (Cup, Napkin, Sedotan)">Supplies</option>
+                            <option value="Gaji / Upah Staff">Gaji / Upah Staff</option>
+                            <option value="Sewa Lokasi / Rent">Sewa Lokasi / Rent</option>
+                            <option value="Listrik & Air">Listrik & Air</option>
+                            <option value="Gas / Bahan Bakar">Gas / Bahan Bakar</option>
+                            <option value="Maintenance & Perbaikan">Maintenance & Perbaikan</option>
+                            <option value="Marketing & Promosi">Marketing & Promosi</option>
+                            <option value="Peralatan & Supplies (Non-consumable)">Peralatan</option>
+                            <option value="Asuransi">Asuransi</option>
+                            <option value="Admin & Operasional">Admin & Operasional</option>
+                            <option value="Lainnya / Miscellaneous">Lainnya</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Nominal (Rp)</label><input type="number" id="expAmount"></div>
+                    <div class="form-group"><label>Metode</label><select id="expPayment"><option>Cash</option><option>Transfer</option></select></div>
+                </div>
+                <div class="form-group"><label>Keterangan</label><input type="text" id="expDescription"></div>
+                <button class="btn-primary" onclick="submitExpense()">Simpan Transaksi</button>
+            </div>
+            <div class="card">
+                <div class="card-title">Jurnal Kas Pengeluaran</div>
+                <table>
+                    <thead><tr><th>Tanggal</th><th>Kategori</th><th>Keterangan</th><th class="text-right">Nominal</th><th class="text-center">Aksi</th></tr></thead>
+                    <tbody id="expenseLogBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB REPORT -->
+        <div class="tab-content" id="report-tab">
+            <div class="card">
+                <div class="card-title text-center">LAPORAN LABA RUGI DUAL-TRACK</div>
+                <div class="pl-row"><span>1a. Revenue Retail (POS ESB)</span><span id="repPosRevenue" class="amount">Rp 0</span></div>
+                <div class="pl-row"><span>1b. Realisasi Pelunasan Piutang B2B</span><span id="repB2bRevenue" class="amount">Rp 0</span></div>
+                <div class="pl-row total"><span>TOTAL CASH REVENUE</span><span id="repRevenue" class="amount">Rp 0</span></div>
+                <div class="pl-row"><span>HPP Target (Kunci 70%)</span><span id="repCogsTarget" class="amount">Rp 0</span></div>
+                <div class="pl-row total"><span>2. TARGET GROSS PROFIT (30%)</span><span id="repGrossProfit" class="amount">Rp 0</span></div>
+                <div id="repOpexRows"></div>
+                <div class="pl-row"><span>Subtotal OPEX</span><span id="repTotalOpex" class="amount">Rp 0</span></div>
+                <div class="pl-row"><span>Beban Pemborosan Bar (Varians)</span><span id="repVariance" class="amount" style="color: var(--warning);">Rp 0</span></div>
+                <div class="pl-row net-profit"><span>3. NET OPERATING PROFIT</span><span id="repNetProfit">Rp 0</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PELUNASAN -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-body">
+            <div class="card-title">Pelunasan Piutang</div>
+            <input type="hidden" id="payModalInvoiceId">
+            <div class="form-group"><label>Nominal Pembayaran (Rp)</label><input type="number" id="payModalAmount"></div>
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button class="btn-primary" style="flex: 1;" onclick="submitPayment()">Simpan</button>
+                <button class="btn-secondary" onclick="closePaymentModal()">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading" id="loading"><div class="spinner"></div></div>
+
+    <script>
+        // PASTEKAN URL WEB APP RESULT DARI DEPLOYMENT GOOGLE APPS SCRIPT ANDA DI SINI
+        const API_URL = 'https://script.google.com/macros/s/AKfycbx_GANTI_DENGAN_DEPLOYMENT_ID_ANDA/exec';
+
+        let posPayload = [];
+        let parsedRevenueGross = 0;
+
+        function formatCurrency(val) { return 'Rp ' + Math.round(val || 0).toLocaleString('id-ID'); }
+        function showLoading(active) { document.getElementById('loading').className = active ? 'loading show' : 'loading'; }
+        function notify(msg, type = 'success') {
+            const el = document.getElementById(type + 'Alert');
+            el.textContent = msg; el.className = 'alert alert-' + type + ' show';
+            setTimeout(() => { el.className = 'alert alert-' + type; }, 4000);
+        }
+        function switchTab(name, evt) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(name + '-tab').classList.add('active');
+            evt.target.classList.add('active');
+        }
+
+        // --- HANDLER INTEGRASI API DENGAN SOLUSI CORS ---
+        async function apiGet(action, params = {}) {
+            showLoading(true);
+            try {
+                const query = new URLSearchParams({ action, ...params }).toString();
+                const res = await fetch(`${API_URL}?${query}`, {
+                    method: 'GET',
+                    redirect: 'follow'
+                });
+                if (!res.ok) throw new Error(`HTTP Error Status: ${res.status}`);
+                const json = await res.json();
+                showLoading(false);
+                if (json.status === 'error') throw new Error(json.message);
+                return json.data;
+            } catch (err) {
+                showLoading(false);
+                notify('Koneksi Gagal: ' + err.message + '. Pastikan API_URL diisi dengan URL Deployment Apps Script aktif.', 'error');
+                throw err;
+            }
+        }
+
+        async function apiPost(action, body = {}) {
+            showLoading(true);
+            try {
+                // Tipe text/plain digunakan untuk menghindari Pre-flight OPTIONS CORS check pada GAS
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action, ...body }),
+                    redirect: 'follow'
+                });
+                if (!res.ok) throw new Error(`HTTP Error Status: ${res.status}`);
+                const json = await res.json();
+                showLoading(false);
+                if (json.status === 'error') throw new Error(json.message);
+                return json.data;
+            } catch (err) {
+                showLoading(false);
+                notify('Koneksi Gagal: ' + err.message, 'error');
+                throw err;
+            }
+        }
+
+        // --- APPLICATION LOGIC ---
+        async function loadData() {
+            const m = document.getElementById('monthSelect').value;
+            const y = document.getElementById('yearSelect').value;
+            const data = await apiGet('getData', { bulan: m, tahun: y });
+            
+            document.getElementById('totalRevenue').textContent = formatCurrency(data.revenue);
+            document.getElementById('cogsTarget').textContent = formatCurrency(data.cogs_target);
+            document.getElementById('cogsVariance').textContent = formatCurrency(data.operational_variance);
+            document.getElementById('outstandingAR').textContent = formatCurrency(data.outstanding_ar);
+            document.getElementById('netProfit').textContent = formatCurrency(data.profit);
+
+            renderExpenseBreakdown(data.expensesByCategory);
+            renderExpenseList(data.expenses_list);
+        }
+
+        function renderExpenseBreakdown(breakdown) {
+            const tbody = document.getElementById('expenseBreakdownBody');
+            tbody.innerHTML = '';
+            for (let cat in breakdown) {
+                if (cat === 'Bahan Baku / COGS') continue;
+                tbody.innerHTML += `<tr><td>${cat}</td><td class="text-right amount">${formatCurrency(breakdown[cat])}</td></tr>`;
+            }
+        }
+
+        function renderExpenseList(list) {
+            const tbody = document.getElementById('expenseLogBody');
+            tbody.innerHTML = '';
+            list.forEach(item => {
+                tbody.innerHTML += `<tr>
+                    <td>${item.date}</td><td>${item.category}</td><td>${item.description}</td>
+                    <td class="text-right amount">${formatCurrency(item.amount)}</td>
+                    <td class="text-center"><button class="btn-danger" onclick="deleteExpenseRow(${item.rowIndex})">Hapus</button></td>
+                </tr>`;
+            });
+        }
+
+        async function loadInvoices() {
+            const invoices = await apiGet('getInvoices');
+            const tbody = document.getElementById('invoiceTableBody');
+            tbody.innerHTML = '';
+            invoices.forEach(inv => {
+                let badgeClass = inv.status === 'LUNAS' ? 'badge-lunas' : (inv.status === 'PARSIAL' ? 'badge-parsial' : 'badge-unpaid');
+                const actionBtn = inv.status !== 'LUNAS' ? `<button class="btn-success" onclick="openPaymentModal('${inv.id}', ${inv.remainingAmount})">Bayar</button>` : 'Selesai';
+                tbody.innerHTML += `<tr>
+                    <td><strong>${inv.id}</strong></td><td>${inv.customer}</td><td>${inv.dueDate}</td>
+                    <td class="text-right amount">${formatCurrency(inv.totalAmount)}</td>
+                    <td class="text-right amount">${formatCurrency(inv.remainingAmount)}</td>
+                    <td class="text-center"><span class="badge ${badgeClass}">${inv.status}</span></td>
+                    <td class="text-center">${actionBtn}</td>
+                </tr>`;
+            });
+        }
+
+        async function submitInvoice() {
+            const customer = document.getElementById('invCustomer').value;
+            const totalAmount = document.getElementById('invTotalAmount').value;
+            const date = document.getElementById('invDate').value;
+            const dueDate = document.getElementById('invDueDate').value;
+            const notes = document.getElementById('invNotes').value;
+
+            await apiPost('createInvoice', { customer, date, dueDate, totalAmount, notes });
+            notify('Invoice berhasil dibuat!');
+            loadInvoices(); loadData();
+        }
+
+        function openPaymentModal(invId, remaining) {
+            document.getElementById('payModalInvoiceId').value = invId;
+            document.getElementById('payModalAmount').value = remaining;
+            document.getElementById('paymentModal').className = 'modal show';
+        }
+        function closePaymentModal() { document.getElementById('paymentModal').className = 'modal'; }
+
+        async function submitPayment() {
+            const invoiceId = document.getElementById('payModalInvoiceId').value;
+            const paymentAmount = document.getElementById('payModalAmount').value;
+            await apiPost('recordPayment', { invoiceId, paymentAmount });
+            notify('Pelunasan dicatat!');
+            closePaymentModal(); loadInvoices(); loadData();
+        }
+
+        function handleFrontendFileParse(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const data = new Uint8Array(evt.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
+                let headerIdx = rows.findIndex(r => r && r.includes('Menu') && r.includes('Qty'));
+                if (headerIdx === -1) { notify('Format ESB tidak valid', 'error'); return; }
+
+                const headers = rows[headerIdx];
+                const menuCol = headers.indexOf('Menu'), qtyCol = headers.indexOf('Qty'), totalCol = headers.indexOf('Grand Total');
+                posPayload = []; parsedRevenueGross = 0;
+
+                for (let i = headerIdx + 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    if (!row || !row[menuCol]) continue;
+                    const qty = parseInt(String(row[qtyCol]).replace(/[^0-9-]/g, '')) || 0;
+                    const total = parseFloat(String(row[totalCol]).replace(/[^0-9.-]/g, '')) || 0;
+                    if (qty > 0) { posPayload.push({ name: String(row[menuCol]).trim(), qty }); parsedRevenueGross += total; }
+                }
+                document.getElementById('posParsedCount').textContent = posPayload.length + ' Item';
+                document.getElementById('posParsedRevenue').textContent = formatCurrency(parsedRevenueGross);
+                document.getElementById('posUploadSummary').style.display = 'block';
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        async function executePosSync() {
+            const m = document.getElementById('monthSelect').value;
+            const y = document.getElementById('yearSelect').value;
+            await apiPost('processPosData', { salesItems: posPayload, totalRevenue: parsedRevenueGross, bulan: m, tahun: y });
+            notify('Sinkronisasi POS berhasil!');
+            document.getElementById('posUploadSummary').style.display = 'none';
+            loadData();
+        }
+
+        async function loadInventory() {
+            const items = await apiGet('getInventory');
+            const tbody = document.getElementById('inventoryTableBody');
+            tbody.innerHTML = '';
+            items.forEach(it => {
+                tbody.innerHTML += `<tr><td>${it.nama}</td><td>${it.satuan}</td><td>${it.qty.toFixed(2)}</td><td class="text-right amount">${formatCurrency(it.nilai)}</td></tr>`;
+            });
+        }
+
+        async function submitExpense() {
+            const date = document.getElementById('expDate').value;
+            const category = document.getElementById('expCategory').value;
+            const amount = document.getElementById('expAmount').value;
+            const description = document.getElementById('expDescription').value;
+            const payment = document.getElementById('expPayment').value;
+            await apiPost('addExpense', { date, category, description, amount, payment, notes: '' });
+            notify('Pengeluaran dicatat!'); loadData();
+        }
+
+        async function deleteExpenseRow(rowIndex) {
+            if (!confirm('Hapus baris pengeluaran ini?')) return;
+            await apiPost('deleteExpense', { rowIndex });
+            notify('Terhapus!'); loadData();
+        }
+
+        async function refreshReport() {
+            const m = document.getElementById('monthSelect').value;
+            const y = document.getElementById('yearSelect').value;
+            const data = await apiGet('getData', { bulan: m, tahun: y });
+            document.getElementById('repPosRevenue').textContent = formatCurrency(data.revenue_pos);
+            document.getElementById('repB2bRevenue').textContent = formatCurrency(data.revenue_b2b_paid);
+            document.getElementById('repRevenue').textContent = formatCurrency(data.revenue);
+            document.getElementById('repCogsTarget').textContent = formatCurrency(data.cogs_target);
+            document.getElementById('repGrossProfit').textContent = formatCurrency(data.gross_profit);
+            document.getElementById('repTotalOpex').textContent = formatCurrency(data.operating_expenses);
+            document.getElementById('repVariance').textContent = formatCurrency(data.operational_variance);
+            document.getElementById('repNetProfit').textContent = formatCurrency(data.profit);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('expDate').value = today;
+            document.getElementById('invDate').value = today;
+            document.getElementById('invDueDate').value = today;
+            loadData();
+        });
+    </script>
+</body>
+</html>
