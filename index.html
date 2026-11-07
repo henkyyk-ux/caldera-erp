@@ -3,298 +3,237 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Caldera Coffee - P&L Management System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Caldera Coffee & Cosmology ERP - Executive Suite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --gold: #D4AF37; --gold-light: #E8C75A; --gold-dark: #B8860B;
-            --dark-bg: #0F0F0F; --dark-secondary: #1a1a1a; --dark-tertiary: #2a2a2a;
-            --text-primary: #FFFFFF; --text-secondary: #B0B0B0;
-            --success: #6BBE7F; --success-dark: #5AA36B;
-            --danger: #E74C3C; --border: rgba(212, 175, 55, 0.1);
-            --border-gold: rgba(212, 175, 55, 0.3);
+            --gold: #D4AF37; --gold-light: #F3E5AB; --gold-dark: #997A15;
+            --dark-bg: #0A0A0C; --dark-card: #121216; --dark-accent: #1A1A22;
+            --text-main: #F4F4F6; --text-muted: #8E8E9A;
+            --success: #2ECC71; --danger: #E74C3C; --warning: #F39C12; --info: #3498DB;
+            --border-gold: rgba(212, 175, 55, 0.2); --border-card: rgba(255, 255, 255, 0.05);
+            --shadow-gold: 0 8px 32px rgba(212, 175, 55, 0.1);
         }
-        html { scroll-behavior: smooth; }
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, var(--dark-bg) 0%, #1a1a2e 100%);
-            color: var(--text-primary); line-height: 1.6;
-            min-height: 100vh; overflow-x: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif; background: var(--dark-bg);
+            color: var(--text-main); line-height: 1.5; min-height: 100vh;
         }
-        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .container { max-width: 1440px; margin: 0 auto; padding: 24px; }
         header {
-            background: linear-gradient(90deg, rgba(15, 15, 15, 0.95) 0%, rgba(26, 26, 26, 0.95) 100%);
-            border-bottom: 2px solid var(--border-gold);
-            padding: 20px 0; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px);
+            background: rgba(18, 18, 22, 0.85); border-bottom: 1px solid var(--border-gold);
+            padding: 18px 0; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(16px);
         }
-        header .container { display: flex; justify-content: space-between; align-items: center; gap: 30px; }
-        .logo-section { display: flex; align-items: center; gap: 15px; }
-        .logo-icon {
-            width: 50px; height: 50px;
-            background: radial-gradient(circle at 30% 30%, var(--gold-light), var(--gold));
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 24px; font-weight: bold; box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        header .container { display: flex; justify-content: space-between; align-items: center; }
+        .brand { display: flex; align-items: center; gap: 14px; }
+        .brand-logo {
+            width: 44px; height: 44px; background: linear-gradient(135deg, var(--gold-light), var(--gold-dark));
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            font-size: 22px; color: #000; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.25);
         }
-        .logo-text { display: flex; flex-direction: column; }
-        .logo-name {
-            font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700;
-            background: linear-gradient(135deg, var(--gold-light), var(--gold));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        .brand-title { font-family: 'Cinzel', serif; font-size: 20px; font-weight: 700; color: var(--gold-light); letter-spacing: 1px; }
+        .period-box { display: flex; gap: 10px; background: var(--dark-accent); padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-card); }
+        .period-box select { background: transparent; color: var(--text-main); border: none; padding: 4px 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .period-box select option { background: var(--dark-card); color: var(--text-main); }
+        
+        .grid-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin: 24px 0; }
+        .card-metric {
+            background: var(--dark-card); border: 1px solid var(--border-card); border-radius: 14px;
+            padding: 20px; position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .logo-tagline { font-size: 11px; color: var(--text-secondary); letter-spacing: 1px; text-transform: uppercase; }
-        .period-selector {
-            display: flex; gap: 15px; align-items: center;
-            background: var(--dark-tertiary); padding: 12px 20px;
-            border-radius: 8px; border: 1px solid var(--border);
-        }
-        .period-selector label { color: var(--text-secondary); font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
-        .period-selector select {
-            background: var(--dark-secondary); color: var(--text-primary);
-            border: 1px solid var(--border-gold); padding: 8px 12px;
-            border-radius: 4px; font-size: 13px; font-weight: 500;
-            cursor: pointer; transition: all 0.3s;
-        }
-        .period-selector select:hover, .period-selector select:focus {
-            border-color: var(--gold); box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); outline: none;
-        }
-        .hero { text-align: center; margin: 40px 0 50px; animation: fadeIn 0.8s ease-out; }
-        .hero h1 {
-            font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 700; margin-bottom: 10px;
-            background: linear-gradient(135deg, var(--text-primary), var(--gold));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-        }
-        .hero p { font-size: 14px; color: var(--text-secondary); letter-spacing: 1px; text-transform: uppercase; }
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 40px; }
-        .metric-card {
-            background: linear-gradient(135deg, var(--dark-secondary) 0%, var(--dark-tertiary) 100%);
-            border: 1px solid var(--border); border-radius: 12px; padding: 25px;
-            transition: all 0.3s; position: relative; overflow: hidden;
-        }
-        .metric-card::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-            background: linear-gradient(90deg, var(--gold), transparent);
-        }
-        .metric-card:hover { border-color: var(--border-gold); box-shadow: 0 8px 32px rgba(212, 175, 55, 0.15); transform: translateY(-4px); }
-        .metric-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 10px; }
-        .metric-value { font-size: 36px; font-weight: 700; color: var(--gold); margin-bottom: 8px; font-family: 'Courier New', monospace; }
-        .metric-subtitle { font-size: 12px; color: var(--text-secondary); }
-        .profit-card { background: linear-gradient(135deg, rgba(107, 190, 127, 0.1) 0%, rgba(90, 163, 107, 0.1) 100%) !important; border: 1px solid rgba(107, 190, 127, 0.3) !important; }
-        .profit-card .metric-value { color: var(--success); }
-        .profit-card.loss { background: linear-gradient(135deg, rgba(231, 76, 60, 0.1) 0%, rgba(192, 57, 43, 0.1) 100%) !important; border: 1px solid rgba(231, 76, 60, 0.3) !important; }
-        .profit-card.loss .metric-value { color: var(--danger); }
-        .tabs { display: flex; gap: 0; margin-bottom: 30px; border-bottom: 2px solid var(--border); overflow-x: auto; padding-bottom: 0; }
-        .tabs::-webkit-scrollbar { height: 4px; }
-        .tabs::-webkit-scrollbar-track { background: transparent; }
-        .tabs::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+        .card-metric:hover { border-color: var(--border-gold); transform: translateY(-3px); box-shadow: var(--shadow-gold); }
+        .card-metric::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--gold), transparent); }
+        .metric-title { font-size: 11px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; font-weight: 700; }
+        .metric-num { font-size: 24px; font-weight: 700; color: var(--gold-light); margin: 8px 0 4px 0; font-family: 'Cinzel', serif; }
+        
+        .tabs { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid var(--border-card); overflow-x: auto; }
         .tab-btn {
-            padding: 16px 24px; background: none; border: none; color: var(--text-secondary);
-            cursor: pointer; font-weight: 500; font-size: 14px; position: relative;
-            transition: all 0.3s; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px;
+            padding: 12px 20px; background: none; border: none; color: var(--text-muted);
+            cursor: pointer; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+            border-bottom: 2px solid transparent; transition: all 0.2s;
         }
-        .tab-btn:hover, .tab-btn.active { color: var(--gold); }
-        .tab-btn.active::after {
-            content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 3px;
-            background: linear-gradient(90deg, var(--gold), transparent); border-radius: 2px;
-        }
-        .tab-content { display: none; animation: fadeIn 0.3s ease-out; }
+        .tab-btn.active { color: var(--gold-light); border-bottom-color: var(--gold); }
+        .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .card {
-            background: linear-gradient(135deg, var(--dark-secondary) 0%, var(--dark-tertiary) 100%);
-            border: 1px solid var(--border); border-radius: 12px; padding: 30px; margin-bottom: 20px; transition: all 0.3s;
+        
+        .panel { background: var(--dark-card); border: 1px solid var(--border-card); border-radius: 14px; padding: 24px; margin-bottom: 20px; }
+        .panel-title { font-family: 'Cinzel', serif; font-size: 18px; color: var(--gold-light); margin-bottom: 20px; }
+        
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px; }
+        .form-group { margin-bottom: 14px; }
+        label { display: block; font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
+        input, select {
+            width: 100%; padding: 10px 14px; background: var(--dark-accent); border: 1px solid var(--border-card);
+            border-radius: 8px; color: var(--text-main); font-size: 13px; transition: border-color 0.2s;
         }
-        .card:hover { border-color: var(--border-gold); }
-        .card-title {
-            font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; margin-bottom: 25px;
-            background: linear-gradient(135deg, var(--text-primary), var(--gold));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-        }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-weight: 500; margin-bottom: 8px; color: var(--text-primary); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
-        input[type="text"], input[type="number"], input[type="date"], select, textarea {
-            width: 100%; padding: 12px 16px; background: var(--dark-tertiary); border: 1px solid var(--border);
-            border-radius: 8px; color: var(--text-primary); font-size: 14px; font-family: inherit; transition: all 0.3s;
-        }
-        input:focus, select:focus, textarea:focus {
-            outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1); background: rgba(26, 26, 26, 0.8);
-        }
-        input::placeholder { color: var(--text-secondary); }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        input:focus, select:focus { border-color: var(--gold); outline: none; }
+        
         button {
-            padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;
-            transition: all 0.3s; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; font-family: inherit;
+            padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 12px;
+            text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; border: none; transition: all 0.2s;
         }
-        .btn-primary { background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: var(--dark-bg); box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4); }
-        .btn-primary:active { transform: translateY(0); }
-        .btn-secondary { background: var(--dark-tertiary); color: var(--text-primary); border: 1px solid var(--border-gold); }
-        .btn-secondary:hover { background: var(--dark-secondary); border-color: var(--gold); color: var(--gold); }
-        .btn-danger { background: rgba(231, 76, 60, 0.2); color: var(--danger); border: 1px solid var(--danger); }
-        .btn-danger:hover { background: var(--danger); color: var(--text-primary); }
-        .btn-group { display: flex; gap: 12px; margin-top: 25px; flex-wrap: wrap; }
-        .table-container { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border); }
-        table { width: 100%; border-collapse: collapse; }
-        th {
-            background: rgba(212, 175, 55, 0.05); padding: 16px; text-align: left; font-weight: 600;
-            font-size: 12px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border);
-        }
-        td { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 14px; }
-        tr:hover { background: rgba(212, 175, 55, 0.05); }
-        tr:last-child td { border-bottom: none; }
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
-        .amount { font-weight: 600; color: var(--gold); font-family: 'Courier New', monospace; }
-        .pl-section { margin-bottom: 30px; }
-        .pl-section-title {
-            background: rgba(212, 175, 55, 0.1); padding: 14px 18px; font-weight: 600; border-left: 4px solid var(--gold);
-            margin-bottom: 20px; color: var(--gold); text-transform: uppercase; font-size: 12px; letter-spacing: 1px;
-        }
-        .pl-row { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
-        .pl-row:last-child { border-bottom: none; }
-        .pl-row.total { font-weight: 600; background: rgba(212, 175, 55, 0.05); padding: 18px; border-radius: 8px; margin-top: 15px; border: none; }
-        .pl-row.net-profit {
-            font-weight: 700; font-size: 18px; color: var(--text-primary);
-            background: linear-gradient(135deg, rgba(107, 190, 127, 0.15), rgba(90, 163, 107, 0.15));
-            padding: 20px 18px; border-radius: 8px; margin-top: 20px; border: 1px solid rgba(107, 190, 127, 0.3);
-        }
-        .pl-row.net-profit.loss { background: linear-gradient(135deg, rgba(231, 76, 60, 0.15), rgba(192, 57, 43, 0.15)); border: 1px solid rgba(231, 76, 60, 0.3); }
-        .pl-row span:first-child { flex: 1; }
-        .pl-row span:last-child { text-align: right; color: var(--gold); }
-        .alert { padding: 16px 20px; border-radius: 8px; margin-bottom: 20px; display: none; font-size: 14px; border-left: 4px solid; }
-        .alert.show { display: block; animation: slideDown 0.3s ease-out; }
-        .alert-success { background: rgba(107, 190, 127, 0.1); color: var(--success); border-left-color: var(--success); }
-        .alert-error { background: rgba(231, 76, 60, 0.1); color: var(--danger); border-left-color: var(--danger); }
-        .loading {
-            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 15, 15, 0.8); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(4px);
-        }
-        .loading.show { display: flex; }
-        .spinner { border: 3px solid rgba(212, 175, 55, 0.2); border-top: 3px solid var(--gold); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
+        .btn-gold { background: linear-gradient(135deg, var(--gold-light), var(--gold-dark)); color: #000; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2); }
+        .btn-gold:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-outline { background: transparent; color: var(--text-main); border: 1px solid var(--border-gold); }
+        .btn-outline:hover { background: var(--dark-accent); color: var(--gold-light); }
+        .btn-danger { background: rgba(231, 76, 60, 0.15); color: var(--danger); border: 1px solid rgba(231, 76, 60, 0.3); }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border-card); font-size: 13px; }
+        th { color: var(--gold); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; background: rgba(212, 175, 55, 0.03); }
+        .num { font-family: 'Cinzel', serif; font-weight: 600; color: var(--gold-light); }
+        .text-right { text-align: right; } .text-center { text-align: center; }
+        
+        .badge { padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .badge-lunas { background: rgba(46, 204, 113, 0.15); color: var(--success); }
+        .badge-parsial { background: rgba(243, 156, 18, 0.15); color: var(--warning); }
+        .badge-unpaid { background: rgba(231, 76, 60, 0.15); color: var(--danger); }
+        
+        .pl-line { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-card); font-size: 13px; }
+        .pl-line.bold { font-weight: 700; background: rgba(212, 175, 55, 0.05); padding: 12px 14px; border-radius: 8px; margin: 8px 0; }
+        .pl-line.hero-profit { background: rgba(46, 204, 113, 0.1); padding: 16px; border-radius: 8px; border: 1px solid rgba(46, 204, 113, 0.3); font-weight: 700; font-size: 16px; }
+        
+        .toast { padding: 14px 20px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; display: none; }
+        .toast.show { display: block; }
+        .toast-success { background: rgba(46, 204, 113, 0.15); color: var(--success); border-left: 4px solid var(--success); }
+        .toast-error { background: rgba(231, 76, 60, 0.15); color: var(--danger); border-left: 4px solid var(--danger); }
+        
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 999; justify-content: center; align-items: center; }
+        .overlay.show { display: flex; }
+        .spinner { border: 3px solid rgba(212, 175, 55, 0.15); border-top: 3px solid var(--gold); border-radius: 50%; width: 40px; height: 40px; animation: spin 0.8s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        @media (max-width: 768px) {
-            header .container { flex-direction: column; gap: 20px; }
-            .period-selector { width: 100%; flex-direction: column; align-items: stretch; }
-            .period-selector select { width: 100%; }
-            .metrics-grid, .form-row { grid-template-columns: 1fr; }
-            .btn-group { flex-direction: column; }
-            button { width: 100%; }
-        }
-        .mt-30 { margin-top: 30px; } .mb-30 { margin-bottom: 30px; }
-        .text-center-all { text-align: center; } .text-muted { color: var(--text-secondary); font-size: 12px; }
-        .divider { height: 1px; background: var(--border); margin: 25px 0; }
-        footer { text-align: center; padding: 30px 0; color: var(--text-secondary); font-size: 12px; border-top: 1px solid var(--border); margin-top: 50px; }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
     <header>
         <div class="container">
-            <div class="logo-section">
-                <div class="logo-icon">☕</div>
-                <div class="logo-text">
-                    <div class="logo-name">CALDERA COFFEE</div>
-                    <div class="logo-tagline">P&L Management</div>
+            <div class="brand">
+                <div class="brand-logo">☕</div>
+                <div>
+                    <div class="brand-title">CALDERA & COSMOLOGY</div>
+                    <div style="font-size: 10px; color: var(--text-muted); letter-spacing: 1.5px;">DUAL-TRACK ERP SUITE</div>
                 </div>
             </div>
-            <div class="period-selector">
-                <label>📅 Periode:</label>
-                <select id="monthSelect" onchange="changePeriod()">
+            <div class="period-box">
+                <select id="monthSelect" onchange="loadData()">
                     <option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option>
                     <option value="4">April</option><option value="5">Mei</option><option value="6">Juni</option>
                     <option value="7">Juli</option><option value="8" selected>Agustus</option><option value="9">September</option>
                     <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
                 </select>
-                <select id="yearSelect" onchange="changePeriod()">
-                    <option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
+                <select id="yearSelect" onchange="loadData()">
+                    <option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
                 </select>
             </div>
         </div>
     </header>
 
     <div class="container">
-        <div class="alert alert-success" id="successAlert"></div>
-        <div class="alert alert-error" id="errorAlert"></div>
+        <div class="toast toast-success" id="successAlert"></div>
+        <div class="toast toast-error" id="errorAlert"></div>
 
-        <div class="hero">
-            <h1>Financial Dashboard</h1>
-            <p>✨ Monthly Performance Overview</p>
-        </div>
-
-        <div class="metrics-grid">
-            <div class="metric-card"><div class="metric-label">💰 Total Revenue</div><div class="metric-value" id="totalRevenue">Rp 0</div><div class="metric-subtitle">Penjualan Bulan Ini</div></div>
-            <div class="metric-card"><div class="metric-label">💸 Total Expenses</div><div class="metric-value" id="totalExpenses">Rp 0</div><div class="metric-subtitle">Semua Pengeluaran</div></div>
-            <div class="metric-card profit-card" id="profitCard"><div class="metric-label">📈 Net Profit</div><div class="metric-value" id="netProfit">Rp 0</div><div class="metric-subtitle">Margin: <strong id="marginPct" style="color: var(--gold);">0%</strong></div></div>
+        <div class="grid-metrics">
+            <div class="card-metric">
+                <div class="metric-title">Cash Revenue</div>
+                <div class="metric-num" id="totalRevenue">Rp 0</div>
+            </div>
+            <div class="card-metric">
+                <div class="metric-title">HPP Target (70%)</div>
+                <div class="metric-num" id="cogsTarget">Rp 0</div>
+            </div>
+            <div class="card-metric">
+                <div class="metric-title">Beban Waste Bar</div>
+                <div class="metric-num" id="cogsVariance" style="color: var(--warning);">Rp 0</div>
+            </div>
+            <div class="card-metric">
+                <div class="metric-title">Piutang B2B</div>
+                <div class="metric-num" id="outstandingAR" style="color: var(--info);">Rp 0</div>
+            </div>
+            <div class="card-metric">
+                <div class="metric-title">Net Profit Bersih</div>
+                <div class="metric-num" id="netProfit">Rp 0</div>
+            </div>
         </div>
 
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('dashboard', event)">📊 Dashboard</button>
-            <button class="tab-btn" onclick="switchTab('revenue', event)">📈 Revenue</button>
-            <button class="tab-btn" onclick="switchTab('expenses', event)">📝 Expenses</button>
-            <button class="tab-btn" onclick="switchTab('report', event)">📄 P&L Report</button>
-            <button class="tab-btn" onclick="switchTab('inventory', event); loadInventory();">📦 Inventory & BOM</button>
+            <button class="tab-btn" onclick="switchTab('invoicing', event); loadInvoices();">🧾 Invoice & AR</button>
+            <button class="tab-btn" onclick="switchTab('pos', event)">📥 Upload ESB POS</button>
+            <button class="tab-btn" onclick="switchTab('inventory', event); loadInventory();">📦 Inventaris & BOM</button>
+            <button class="tab-btn" onclick="switchTab('expenses', event)">💸 OPEX</button>
+            <button class="tab-btn" onclick="switchTab('report', event); refreshReport();">📄 Laporan P&L</button>
         </div>
 
+        <!-- TAB DASHBOARD -->
         <div class="tab-content active" id="dashboard-tab">
-            <div class="card">
-                <div class="card-title">Expense Breakdown</div>
-                <div class="table-container">
-                    <table>
-                        <thead><tr><th>Category</th><th class="text-right">Amount</th><th class="text-right">% of Total</th></tr></thead>
-                        <tbody id="expenseBreakdownBody"><tr><td colspan="3" class="text-center text-muted">Loading data...</td></tr></tbody>
-                    </table>
-                </div>
+            <div class="panel">
+                <div class="panel-title">Struktur OPEX Bulanan</div>
+                <table>
+                    <thead><tr><th>Kategori Beban</th><th class="text-right">Nominal</th></tr></thead>
+                    <tbody id="expenseBreakdownBody"></tbody>
+                </table>
             </div>
         </div>
 
-        <div class="tab-content" id="revenue-tab">
-            <div class="card">
-                <div class="card-title">Upload Laporan POS (ESB)</div>
-                <div style="border: 2px dashed var(--gold); padding: 40px; text-align: center; border-radius: 8px; background: rgba(212, 175, 55, 0.05); margin-bottom: 20px;">
-                    <p style="margin-bottom: 15px; color: var(--text-secondary);">Pilih file Excel (XLSX) Rekapitulasi Penjualan dari ESB POS</p>
-                    <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" style="display: none;" onchange="handleFileUpload(event)">
-                    <button class="btn-secondary" onclick="document.getElementById('excelFileInput').click()">📁 Pilih File ESB</button>
-                </div>
-                <div id="uploadPreview" style="display: none;">
-                    <p style="color: var(--success); font-weight: bold; margin-bottom: 10px;">✅ File Terbaca: <span id="previewTotalOmzet" class="amount">Rp 0</span></p>
-                    <button class="btn-primary" onclick="submitPosData()">💾 Proses Data & Potong Stok (BOM)</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="tab-content" id="inventory-tab">
-            <div class="card">
-                <div class="card-title">Inventory & HPP Control</div>
-                <div class="form-row" style="margin-bottom: 30px;">
-                    <div style="background: var(--dark-tertiary); padding: 20px; border-radius: 8px; border-left: 4px solid var(--success);">
-                        <p style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase;">Target HPP Owner (70%)</p>
-                        <h3 id="inv-target-hpp" class="amount" style="font-size: 24px; margin-top: 5px;">Rp 0</h3>
-                    </div>
-                    <div id="aktualHppCard" style="background: var(--dark-tertiary); padding: 20px; border-radius: 8px; border-left: 4px solid var(--gold);">
-                        <p style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase;">Aktual HPP (Kalkulasi BOM)</p>
-                        <h3 id="inv-aktual-hpp" class="amount" style="font-size: 24px; margin-top: 5px;">Rp 0</h3>
-                    </div>
-                </div>
-                <div class="table-container">
-                    <table>
-                        <thead><tr><th>Nama Bahan</th><th>Sisa Stok</th><th>Satuan</th><th class="text-right">Nilai Aset</th></tr></thead>
-                        <tbody id="inventoryTableBody"><tr><td colspan="4" class="text-center text-muted">Memuat data inventaris...</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div class="tab-content" id="expenses-tab">
-            <div class="card">
-                <div class="card-title">Add Expense</div>
-                <div class="form-group"><label>Date</label><input type="date" id="expenseDate"></div>
+        <!-- TAB INVOICING -->
+        <div class="tab-content" id="invoicing-tab">
+            <div class="panel">
+                <div class="panel-title">Terbitkan Invoice B2B / Inter-Company</div>
                 <div class="form-row">
+                    <div class="form-group"><label>Nama Customer</label><input type="text" id="invCustomer"></div>
+                    <div class="form-group"><label>Total Tagihan (Rp)</label><input type="number" id="invTotalAmount"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Tanggal Invoice</label><input type="date" id="invDate"></div>
+                    <div class="form-group"><label>Jatuh Tempo</label><input type="date" id="invDueDate"></div>
+                </div>
+                <div class="form-group"><label>Catatan</label><input type="text" id="invNotes"></div>
+                <button class="btn-gold" onclick="submitInvoice()">Simpan Invoice</button>
+            </div>
+            <div class="panel">
+                <div class="panel-title">Daftar Piutang Customer</div>
+                <table>
+                    <thead><tr><th>ID</th><th>Customer</th><th>Jatuh Tempo</th><th class="text-right">Total</th><th class="text-right">Sisa</th><th class="text-center">Status</th><th class="text-center">Aksi</th></tr></thead>
+                    <tbody id="invoiceTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB POS -->
+        <div class="tab-content" id="pos-tab">
+            <div class="panel">
+                <div class="panel-title">Upload Rekap POS ESB</div>
+                <input type="file" id="posFileInput" accept=".xlsx, .xls" onchange="handleFrontendFileParse(event)">
+                <div id="posUploadSummary" style="display: none; margin-top: 15px;">
+                    <div class="pl-line"><span>Total Item Terbaca:</span><strong id="posParsedCount">0</strong></div>
+                    <div class="pl-line"><span>Omzet Bersih POS:</span><strong id="posParsedRevenue" class="num">Rp 0</strong></div>
+                    <button class="btn-gold" style="margin-top: 15px;" onclick="executePosSync()">⚡ Potong Stok BOM & Simpan Omzet</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB INVENTORY -->
+        <div class="tab-content" id="inventory-tab">
+            <div class="panel">
+                <div class="panel-title">Sisa Stok Bahan Baku (Ledger Real-Time)</div>
+                <table>
+                    <thead><tr><th>Nama Bahan</th><th>Satuan</th><th>Sisa Stok</th><th class="text-right">Valuasi Persediaan</th></tr></thead>
+                    <tbody id="inventoryTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB EXPENSES -->
+        <div class="tab-content" id="expenses-tab">
+            <div class="panel">
+                <div class="panel-title">Input OPEX / Pengeluaran</div>
+                <div class="form-row">
+                    <div class="form-group"><label>Tanggal</label><input type="date" id="expDate"></div>
                     <div class="form-group">
-                        <label>Category</label>
-                        <select id="expenseCategory">
-                            <option value="">-- Pilih Kategori --</option>
-                            <option value="Bahan Baku / COGS">Bahan Baku / COGS</option>
+                        <label>Kategori</label>
+                        <select id="expCategory">
+                            <option value="Bahan Baku / COGS">Bahan Baku / COGS (Aset Stok)</option>
                             <option value="Supplies (Cup, Napkin, Sedotan)">Supplies</option>
                             <option value="Gaji / Upah Staff">Gaji / Upah Staff</option>
                             <option value="Sewa Lokasi / Rent">Sewa Lokasi / Rent</option>
@@ -302,70 +241,80 @@
                             <option value="Gas / Bahan Bakar">Gas / Bahan Bakar</option>
                             <option value="Maintenance & Perbaikan">Maintenance & Perbaikan</option>
                             <option value="Marketing & Promosi">Marketing & Promosi</option>
-                            <option value="Peralatan & Supplies (Non-consumable)">Peralatan & Supplies</option>
+                            <option value="Peralatan & Supplies (Non-consumable)">Peralatan</option>
                             <option value="Asuransi">Asuransi</option>
                             <option value="Admin & Operasional">Admin & Operasional</option>
                             <option value="Lainnya / Miscellaneous">Lainnya</option>
                         </select>
                     </div>
-                    <div class="form-group"><label>Amount</label><input type="number" id="expenseAmount" placeholder="Contoh: 100000"></div>
                 </div>
-                <div class="form-group"><label>Description</label><input type="text" id="expenseDescription" placeholder="Keterangan pengeluaran"></div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Payment Method</label>
-                        <select id="expensePayment"><option value="Cash">Cash</option><option value="Transfer">Transfer</option><option value="Card">Card</option><option value="Check">Check</option></select>
-                    </div>
-                    <div class="form-group"><label>Notes (Optional)</label><input type="text" id="expenseNotes" placeholder="Catatan tambahan"></div>
+                    <div class="form-group"><label>Nominal (Rp)</label><input type="number" id="expAmount"></div>
+                    <div class="form-group"><label>Metode Pembayaran</label><select id="expPayment"><option>Cash</option><option>Transfer</option></select></div>
                 </div>
-                <button class="btn-primary" onclick="addExpense()">➕ Add Expense</button>
+                <div class="form-group"><label>Keterangan Transaksi</label><input type="text" id="expDescription"></div>
+                <button class="btn-gold" onclick="submitExpense()">Simpan Transaksi</button>
             </div>
-
-            <div class="card mt-30">
-                <div class="card-title">Expense Log</div>
-                <div class="table-container">
-                    <table>
-                        <thead><tr><th>Date</th><th>Category</th><th>Description</th><th class="text-right">Amount</th><th class="text-center">Action</th></tr></thead>
-                        <tbody id="expenseTableBody"><tr><td colspan="5" class="text-center text-muted">No expenses yet</td></tr></tbody>
-                    </table>
-                </div>
+            <div class="panel">
+                <div class="panel-title">Jurnal Pengeluaran</div>
+                <table>
+                    <thead><tr><th>Tanggal</th><th>Kategori</th><th>Keterangan</th><th class="text-right">Nominal</th><th class="text-center">Aksi</th></tr></thead>
+                    <tbody id="expenseLogBody"></tbody>
+                </table>
             </div>
         </div>
 
+        <!-- TAB REPORT -->
         <div class="tab-content" id="report-tab">
-            <div class="card">
-                <h2 class="text-center-all" style="font-family: 'Playfair Display', serif; font-size: 32px; margin-bottom: 10px; background: linear-gradient(135deg, var(--text-primary), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">CALDERA COFFEE</h2>
-                <p class="text-center-all" style="margin-bottom: 30px; color: var(--text-secondary);">MONTHLY P&L REPORT</p>
-                <p class="text-center-all" style="margin-bottom: 30px; color: var(--text-secondary);" id="reportPeriod">Periode: Agustus 2026</p>
-                <div class="divider"></div>
-                <div class="pl-section">
-                    <div class="pl-section-title">📈 REVENUE</div>
-                    <div class="pl-row"><span>Total Penjualan</span><span class="amount" id="report-totalPenjualan">Rp 0</span></div>
-                    <div class="pl-row"><span>Other Income</span><span class="amount" id="report-otherIncome">Rp 0</span></div>
-                    <div class="pl-row total"><span>TOTAL REVENUE</span><span id="report-totalRevenue">Rp 0</span></div>
-                </div>
-                <div class="pl-section">
-                    <div class="pl-section-title">💸 EXPENSES</div>
-                    <div id="report-expenses"></div>
-                    <div class="pl-row total"><span>TOTAL EXPENSES</span><span id="report-totalExpenses">Rp 0</span></div>
-                </div>
-                <div class="pl-section">
-                    <div class="pl-row net-profit" id="report-netProfit"><span>NET PROFIT</span><span>Rp 0</span></div>
-                    <div class="pl-row" style="justify-content: space-between; padding: 15px;"><span>Profit Margin %</span><span style="font-weight: bold; color: var(--gold);" id="report-margin">0%</span></div>
-                </div>
-                <div class="btn-group">
-                    <button class="btn-primary" onclick="printReport()">🖨️ Print Report</button>
-                    <button class="btn-secondary" onclick="exportPDF()">📥 Export PDF</button>
-                </div>
+            <div class="panel">
+                <div class="panel-title text-center">LAPORAN LABA RUGI DUAL-TRACK</div>
+                <div class="pl-line"><span>1a. Revenue Retail (POS ESB)</span><span id="repPosRevenue" class="num">Rp 0</span></div>
+                <div class="pl-line"><span>1b. Realisasi Pelunasan Piutang B2B</span><span id="repB2bRevenue" class="num">Rp 0</span></div>
+                <div class="pl-line bold"><span>TOTAL CASH REVENUE</span><span id="repRevenue" class="num">Rp 0</span></div>
+                <div class="pl-line"><span>HPP Target (Kunci 70%)</span><span id="repCogsTarget" class="num">Rp 0</span></div>
+                <div class="pl-line bold"><span>2. TARGET GROSS PROFIT (30%)</span><span id="repGrossProfit" class="num">Rp 0</span></div>
+                <div id="repOpexRows"></div>
+                <div class="pl-line"><span>Subtotal OPEX</span><span id="repTotalOpex" class="num">Rp 0</span></div>
+                <div class="pl-line"><span>Beban Waste Bar (Inefisiensi)</span><span id="repVariance" class="num" style="color: var(--warning);">Rp 0</span></div>
+                <div class="pl-line hero-profit"><span>3. NET OPERATING PROFIT</span><span id="repNetProfit" class="num">Rp 0</span></div>
             </div>
         </div>
-        <footer><p>✨ Caldera Coffee - Professional P&L Management System</p><p style="margin-top: 8px;">© 2026 All rights reserved</p></footer>
     </div>
-    <div class="loading" id="loading"><div class="spinner"></div></div>
+
+    <!-- MODAL PELUNASAN -->
+    <div class="overlay" id="paymentModal">
+        <div style="background: var(--dark-card); border: 1px solid var(--border-gold); padding: 24px; border-radius: 12px; width: 340px;">
+            <div class="panel-title" style="font-size: 16px;">Pelunasan Piutang</div>
+            <input type="hidden" id="payModalInvoiceId">
+            <div class="form-group"><label>Nominal Pembayaran (Rp)</label><input type="number" id="payModalAmount"></div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn-gold" style="flex: 1;" onclick="submitPayment()">Simpan</button>
+                <button class="btn-outline" onclick="closePaymentModal()">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay" id="loading"><div class="spinner"></div></div>
 
     <script>
-        // MASUKKAN URL WEB APP DEPLOYMENT GOOGLE APPS SCRIPT ANDA DI SINI
         const API_URL = 'https://script.google.com/macros/s/AKfycbw7B97NMsyyfwiXqxIqjvwKGnbMEXigHp06i2-0MSirsj5Mc4YnlK_OO7B0VnhiHtAJ/exec';
+
+        let posPayload = [];
+        let parsedRevenueGross = 0;
+
+        function formatCurrency(val) { return 'Rp ' + Math.round(val || 0).toLocaleString('id-ID'); }
+        function showLoading(active) { document.getElementById('loading').className = active ? 'overlay show' : 'overlay'; }
+        function notify(msg, type = 'success') {
+            const el = document.getElementById(type + 'Alert');
+            el.textContent = msg; el.className = 'toast toast-' + type + ' show';
+            setTimeout(() => { el.className = 'toast toast-' + type; }, 4000);
+        }
+        function switchTab(name, evt) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(name + '-tab').classList.add('active');
+            evt.target.classList.add('active');
+        }
 
         async function apiGet(action, params = {}) {
             showLoading(true);
@@ -378,7 +327,7 @@
                 return json.data;
             } catch (err) {
                 showLoading(false);
-                showAlert('Error: ' + err.message, 'error');
+                notify(err.message, 'error');
                 throw err;
             }
         }
@@ -397,238 +346,175 @@
                 return json.data;
             } catch (err) {
                 showLoading(false);
-                showAlert('Error: ' + err.message, 'error');
+                notify(err.message, 'error');
                 throw err;
             }
         }
 
-        function formatCurrency(amount) {
-            if (!amount) return 'Rp 0';
-            return 'Rp ' + parseInt(amount).toLocaleString('id-ID');
-        }
-
-        function showLoading(show = true) {
-            document.getElementById('loading').classList.toggle('show', show);
-        }
-
-        function showAlert(message, type = 'success') {
-            const alertEl = document.getElementById(type + 'Alert');
-            alertEl.textContent = message;
-            alertEl.classList.add('show');
-            setTimeout(() => alertEl.classList.remove('show'), 4000);
-        }
-
-        function switchTab(tab, event) {
-            event.preventDefault();
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tab + '-tab').classList.add('active');
-            event.target.classList.add('active');
-            if (tab === 'report') refreshReport();
-        }
-
-        function changePeriod() { loadData(); }
-
         async function loadData() {
-            try {
-                const m = parseInt(document.getElementById('monthSelect').value);
-                const y = parseInt(document.getElementById('yearSelect').value);
-                const data = await apiGet('getData', { bulan: m, tahun: y });
+            const m = document.getElementById('monthSelect').value;
+            const y = document.getElementById('yearSelect').value;
+            const data = await apiGet('getData', { bulan: m, tahun: y });
+            
+            document.getElementById('totalRevenue').textContent = formatCurrency(data.revenue);
+            document.getElementById('cogsTarget').textContent = formatCurrency(data.cogs_target);
+            document.getElementById('cogsVariance').textContent = formatCurrency(data.operational_variance);
+            document.getElementById('outstandingAR').textContent = formatCurrency(data.outstanding_ar);
+            document.getElementById('netProfit').textContent = formatCurrency(data.profit);
 
-                document.getElementById('totalRevenue').textContent = formatCurrency(data.revenue);
-                document.getElementById('totalExpenses').textContent = formatCurrency(data.expenses);
-                document.getElementById('netProfit').textContent = formatCurrency(data.profit);
-                document.getElementById('marginPct').textContent = (data.margin * 100).toFixed(1) + '%';
-                
-                document.getElementById('inv-target-hpp').textContent = formatCurrency(data.cogs_target);
-                document.getElementById('inv-aktual-hpp').textContent = formatCurrency(data.cogs_aktual);
-                const aktualCard = document.getElementById('aktualHppCard');
-                if (data.cogs_aktual > data.cogs_target) {
-                    aktualCard.style.borderLeftColor = 'var(--danger)';
-                    aktualCard.style.color = 'var(--danger)';
-                } else {
-                    aktualCard.style.borderLeftColor = 'var(--gold)';
-                    aktualCard.style.color = '';
-                }
-                
-                const profitCard = document.getElementById('profitCard');
-                data.profit < 0 ? profitCard.classList.add('loss') : profitCard.classList.remove('loss');
-                
-                loadExpenseBreakdown(data.expensesByCategory);
-                loadExpenseTable(data.expenses_list);
-            } catch (e) {
-                console.error(e);
-            }
+            renderExpenseBreakdown(data.expensesByCategory);
+            renderExpenseList(data.expenses_list);
         }
 
-        function loadExpenseBreakdown(expenses) {
+        function renderExpenseBreakdown(breakdown) {
             const tbody = document.getElementById('expenseBreakdownBody');
             tbody.innerHTML = '';
-            let total = 0;
-            for (let amount of Object.values(expenses)) total += amount;
-            for (let [category, amount] of Object.entries(expenses)) {
-                const pct = total > 0 ? ((amount / total) * 100).toFixed(1) : 0;
-                tbody.innerHTML += `<tr><td>${category}</td><td class="text-right amount">${formatCurrency(amount)}</td><td class="text-right">${pct}%</td></tr>`;
+            for (let cat in breakdown) {
+                if (cat === 'Bahan Baku / COGS') continue;
+                tbody.innerHTML += `<tr><td>${cat}</td><td class="text-right num">${formatCurrency(breakdown[cat])}</td></tr>`;
             }
         }
 
-        function loadExpenseTable(expenses) {
-            const tbody = document.getElementById('expenseTableBody');
+        function renderExpenseList(list) {
+            const tbody = document.getElementById('expenseLogBody');
             tbody.innerHTML = '';
-            if (!expenses || expenses.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No expenses yet</td></tr>';
-                return;
-            }
-            expenses.forEach((expense) => {
-                tbody.innerHTML += `<tr><td>${expense.date}</td><td>${expense.category}</td><td>${expense.description}</td><td class="text-right amount">${formatCurrency(expense.amount)}</td><td class="text-center"><button class="btn-danger" onclick="deleteExpense(${expense.rowIndex})" style="padding: 4px 8px; font-size: 12px;">Delete</button></td></tr>`;
+            list.forEach(item => {
+                tbody.innerHTML += `<tr>
+                    <td>${item.date}</td><td>${item.category}</td><td>${item.description}</td>
+                    <td class="text-right num">${formatCurrency(item.amount)}</td>
+                    <td class="text-center"><button class="btn-danger" onclick="deleteExpenseRow(${item.rowIndex})">Hapus</button></td>
+                </tr>`;
             });
         }
 
-        async function addExpense() {
-            const date = document.getElementById('expenseDate').value;
-            const category = document.getElementById('expenseCategory').value;
-            const description = document.getElementById('expenseDescription').value;
-            const amount = parseFloat(document.getElementById('expenseAmount').value) || 0;
-            const payment = document.getElementById('expensePayment').value;
-            const notes = document.getElementById('expenseNotes').value;
-
-            if (!date || !category || !description || amount <= 0) {
-                showAlert('Please fill all required fields', 'error');
-                return;
-            }
-
-            await apiPost('addExpense', { date, category, description, amount, payment, notes });
-            showAlert('✨ Expense added successfully!');
-            document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
-            document.getElementById('expenseCategory').value = '';
-            document.getElementById('expenseDescription').value = '';
-            document.getElementById('expenseAmount').value = '';
-            loadData();
+        async function loadInvoices() {
+            const invoices = await apiGet('getInvoices');
+            const tbody = document.getElementById('invoiceTableBody');
+            tbody.innerHTML = '';
+            invoices.forEach(inv => {
+                let badgeClass = inv.status === 'LUNAS' ? 'badge-lunas' : (inv.status === 'PARSIAL' ? 'badge-parsial' : 'badge-unpaid');
+                const actionBtn = inv.status !== 'LUNAS' ? `<button class="btn-gold" onclick="openPaymentModal('${inv.id}', ${inv.remainingAmount})">Bayar</button>` : 'Selesai';
+                tbody.innerHTML += `<tr>
+                    <td><strong>${inv.id}</strong></td><td>${inv.customer}</td><td>${inv.dueDate}</td>
+                    <td class="text-right num">${formatCurrency(inv.totalAmount)}</td>
+                    <td class="text-right num">${formatCurrency(inv.remainingAmount)}</td>
+                    <td class="text-center"><span class="badge ${badgeClass}">${inv.status}</span></td>
+                    <td class="text-center">${actionBtn}</td>
+                </tr>`;
+            });
         }
 
-        async function deleteExpense(rowIndex) {
-            if (confirm('Delete this expense?')) {
-                await apiPost('deleteExpense', { rowIndex });
-                showAlert('✨ Expense deleted!');
-                loadData();
-            }
+        async function submitInvoice() {
+            const customer = document.getElementById('invCustomer').value;
+            const totalAmount = document.getElementById('invTotalAmount').value;
+            const date = document.getElementById('invDate').value;
+            const dueDate = document.getElementById('invDueDate').value;
+            const notes = document.getElementById('invNotes').value;
+
+            await apiPost('createInvoice', { customer, date, dueDate, totalAmount, notes });
+            notify('Invoice berhasil diterbitkan!');
+            loadInvoices(); loadData();
         }
 
-        async function refreshReport() {
-            try {
-                const m = parseInt(document.getElementById('monthSelect').value);
-                const y = parseInt(document.getElementById('yearSelect').value);
-                const data = await apiGet('getReportData', { bulan: m, tahun: y });
-                const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        function openPaymentModal(invId, remaining) {
+            document.getElementById('payModalInvoiceId').value = invId;
+            document.getElementById('payModalAmount').value = remaining;
+            document.getElementById('paymentModal').className = 'overlay show';
+        }
+        function closePaymentModal() { document.getElementById('paymentModal').className = 'overlay'; }
 
-                document.getElementById('reportPeriod').textContent = 'Periode: ' + months[m-1] + ' ' + y;
-                document.getElementById('report-totalPenjualan').textContent = formatCurrency(data.revenue);
-                document.getElementById('report-otherIncome').textContent = formatCurrency(0);
-                document.getElementById('report-totalRevenue').textContent = formatCurrency(data.revenue);
-                document.getElementById('report-totalExpenses').textContent = formatCurrency(data.total_expenses);
-                
-                const profitRow = document.getElementById('report-netProfit');
-                profitRow.textContent = (data.profit >= 0 ? 'NET PROFIT' : 'NET LOSS') + ' : ' + formatCurrency(Math.abs(data.profit));
-                data.profit < 0 ? profitRow.classList.add('loss') : profitRow.classList.remove('loss');
-                document.getElementById('report-margin').textContent = (data.margin * 100).toFixed(1) + '%';
-
-                let expensesHtml = '';
-                for (let [category, amount] of Object.entries(data.expensesByCategory)) {
-                    if (amount > 0) {
-                        expensesHtml += `<div class="pl-row"><span>${category}</span><span class="amount">${formatCurrency(amount)}</span></div>`;
-                    }
-                }
-                document.getElementById('report-expenses').innerHTML = expensesHtml;
-            } catch (e) {
-                console.error(e);
-            }
+        async function submitPayment() {
+            const invoiceId = document.getElementById('payModalInvoiceId').value;
+            const paymentAmount = document.getElementById('payModalAmount').value;
+            await apiPost('recordPayment', { invoiceId, paymentAmount });
+            notify('Pembayaran dicatat!');
+            closePaymentModal(); loadInvoices(); loadData();
         }
 
-        function printReport() { window.print(); }
-        function exportPDF() { showAlert('📥 PDF export feature coming soon!'); }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
-            loadData();
-        });
-
-        let parsedSalesData = [];
-        let parsedTotalRevenue = 0;
-
-        function handleFileUpload(event) {
-            const file = event.target.files[0];
+        function handleFrontendFileParse(e) {
+            const file = e.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
-            reader.onload = function(e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, {type: 'array'});
-                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                const json = XLSX.utils.sheet_to_json(firstSheet, {header: 1});
-                
-                parsedSalesData = [];
-                parsedTotalRevenue = 0;
+            reader.onload = function(evt) {
+                const data = new Uint8Array(evt.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
+                let headerIdx = rows.findIndex(r => r && r.includes('Menu') && r.includes('Qty'));
+                if (headerIdx === -1) { notify('Format ESB tidak sesuai', 'error'); return; }
 
-                let headerRowIdx = -1;
-                for (let i = 0; i < Math.min(20, json.length); i++) {
-                    if (json[i] && json[i].includes('Menu') && json[i].includes('Qty')) {
-                        headerRowIdx = i;
-                        break;
-                    }
+                const headers = rows[headerIdx];
+                const menuCol = headers.indexOf('Menu'), qtyCol = headers.indexOf('Qty'), totalCol = headers.indexOf('Grand Total');
+                posPayload = []; parsedRevenueGross = 0;
+
+                for (let i = headerIdx + 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    if (!row || !row[menuCol]) continue;
+                    const qty = parseInt(String(row[qtyCol]).replace(/[^0-9-]/g, '')) || 0;
+                    const total = parseFloat(String(row[totalCol]).replace(/[^0-9.-]/g, '')) || 0;
+                    if (qty > 0) { posPayload.push({ name: String(row[menuCol]).trim(), qty }); parsedRevenueGross += total; }
                 }
-
-                if (headerRowIdx === -1) {
-                    showAlert('Gagal menemukan kolom Menu/Qty. Pastikan ini file Sales Menu Recapitulation ESB.', 'error');
-                    return;
-                }
-
-                const headers = json[headerRowIdx];
-                const menuIdx = headers.indexOf('Menu');
-                const qtyIdx = headers.indexOf('Qty');
-                const totalIdx = headers.indexOf('Grand Total');
-
-                for (let i = headerRowIdx + 1; i < json.length; i++) {
-                    const row = json[i];
-                    if (!row || row.length === 0) continue;
-                    
-                    const menuName = row[menuIdx];
-                    const qty = parseInt(row[qtyIdx]) || 0;
-                    const total = parseFloat(row[totalIdx]) || 0;
-
-                    if (menuName && qty > 0) {
-                        parsedSalesData.push({name: menuName.toString().trim(), qty: qty});
-                        parsedTotalRevenue += total;
-                    }
-                }
-
-                document.getElementById('uploadPreview').style.display = 'block';
-                document.getElementById('previewTotalOmzet').textContent = formatCurrency(parsedTotalRevenue);
+                document.getElementById('posParsedCount').textContent = posPayload.length + ' Item';
+                document.getElementById('posParsedRevenue').textContent = formatCurrency(parsedRevenueGross);
+                document.getElementById('posUploadSummary').style.display = 'block';
             };
             reader.readAsArrayBuffer(file);
         }
 
-        async function submitPosData() {
-            if (parsedSalesData.length === 0) return;
-            await apiPost('processPosData', {
-                salesItems: parsedSalesData,
-                totalRevenue: parsedTotalRevenue,
-                bulan: parseInt(document.getElementById('monthSelect').value),
-                tahun: parseInt(document.getElementById('yearSelect').value)
-            });
-            showAlert('✨ Data POS tersimpan & Stok BOM terpotong otomatis!');
-            document.getElementById('uploadPreview').style.display = 'none';
+        async function executePosSync() {
+            const m = document.getElementById('monthSelect').value;
+            const y = document.getElementById('yearSelect').value;
+            await apiPost('processPosData', { salesItems: posPayload, totalRevenue: parsedRevenueGross, bulan: m, tahun: y });
+            notify('Sinkronisasi POS berhasil!');
+            document.getElementById('posUploadSummary').style.display = 'none';
             loadData();
         }
 
         async function loadInventory() {
-            const data = await apiGet('getInventory');
+            const items = await apiGet('getInventory');
             const tbody = document.getElementById('inventoryTableBody');
             tbody.innerHTML = '';
-            data.forEach(item => {
-                const isKritis = item.qty < 5 ? `<span style="background: var(--danger); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 8px;">KRITIS</span>` : '';
-                tbody.innerHTML += `<tr><td>${item.nama} ${isKritis}</td><td>${item.qty}</td><td>${item.satuan}</td><td class="text-right amount">${formatCurrency(item.nilai)}</td></tr>`;
+            items.forEach(it => {
+                tbody.innerHTML += `<tr><td>${it.nama}</td><td>${it.satuan}</td><td>${it.qty.toFixed(2)}</td><td class="text-right num">${formatCurrency(it.nilai)}</td></tr>`;
             });
         }
+
+        async function submitExpense() {
+            const date = document.getElementById('expDate').value;
+            const category = document.getElementById('expCategory').value;
+            const amount = document.getElementById('expAmount').value;
+            const description = document.getElementById('expDescription').value;
+            const payment = document.getElementById('expPayment').value;
+            await apiPost('addExpense', { date, category, description, amount, payment, notes: '' });
+            notify('OPEX dicatat!'); loadData();
+        }
+
+        async function deleteExpenseRow(rowIndex) {
+            if (!confirm('Hapus baris ini?')) return;
+            await apiPost('deleteExpense', { rowIndex });
+            notify('Terhapus!'); loadData();
+        }
+
+        async function refreshReport() {
+            const m = document.getElementById('monthSelect').value;
+            const y = document.getElementById('yearSelect').value;
+            const data = await apiGet('getData', { bulan: m, tahun: y });
+            document.getElementById('repPosRevenue').textContent = formatCurrency(data.revenue_pos);
+            document.getElementById('repB2bRevenue').textContent = formatCurrency(data.revenue_b2b_paid);
+            document.getElementById('repRevenue').textContent = formatCurrency(data.revenue);
+            document.getElementById('repCogsTarget').textContent = formatCurrency(data.cogs_target);
+            document.getElementById('repGrossProfit').textContent = formatCurrency(data.gross_profit);
+            document.getElementById('repTotalOpex').textContent = formatCurrency(data.operating_expenses);
+            document.getElementById('repVariance').textContent = formatCurrency(data.operational_variance);
+            document.getElementById('repNetProfit').textContent = formatCurrency(data.profit);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('expDate').value = today;
+            document.getElementById('invDate').value = today;
+            document.getElementById('invDueDate').value = today;
+            loadData();
+        });
     </script>
 </body>
 </html>
