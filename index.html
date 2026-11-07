@@ -184,24 +184,7 @@
 
     <script>
         // MASUKKAN URL WEB APP DEPLOYMENT GOOGLE APPS SCRIPT ANDA DI SINI
-        const API_URL = 'https://script.google.com/macros/s/AKfycbx_GANTI_DENGAN_DEPLOYMENT_ID_ANDA/exec';
-
-        let posPayload = [];
-        let parsedRevenueGross = 0;
-
-        function formatCurrency(val) { return 'Rp ' + Math.round(val || 0).toLocaleString('id-ID'); }
-        function showLoading(active) { document.getElementById('loading').className = active ? 'loading show' : 'loading'; }
-        function notify(msg, type = 'success') {
-            const el = document.getElementById(type + 'Alert');
-            el.textContent = msg; el.className = 'alert alert-' + type + ' show';
-            setTimeout(() => { el.className = 'alert alert-' + type; }, 4000);
-        }
-        function switchTab(name, evt) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(name + '-tab').classList.add('active');
-            evt.target.classList.add('active');
-        }
+        const API_URL = 'https://script.google.com/macros/s/AKfycbw7B97NMsyyfwiXqxIqjvwKGnbMEXigHp06i2-0MSirsj5Mc4YnlK_OO7B0VnhiHtAJ/exec';
 
         async function apiGet(action, params = {}) {
             showLoading(true);
@@ -214,7 +197,7 @@
                 return json.data;
             } catch (err) {
                 showLoading(false);
-                notify(err.message, 'error');
+                showAlert('Error: ' + err.message, 'error');
                 throw err;
             }
         }
@@ -233,125 +216,238 @@
                 return json.data;
             } catch (err) {
                 showLoading(false);
-                notify(err.message, 'error');
+                showAlert('Error: ' + err.message, 'error');
                 throw err;
             }
         }
 
-        async function loadData() {
-            const m = document.getElementById('monthSelect').value;
-            const y = document.getElementById('yearSelect').value;
-            const data = await apiGet('getData', { bulan: m, tahun: y });
-            
-            document.getElementById('totalRevenue').textContent = formatCurrency(data.revenue);
-            document.getElementById('cogsTarget').textContent = formatCurrency(data.cogs_target);
-            document.getElementById('cogsVariance').textContent = formatCurrency(data.operational_variance);
-            document.getElementById('netProfit').textContent = formatCurrency(data.profit);
-
-            renderExpenseBreakdown(data.expensesByCategory);
-            renderExpenseList(data.expenses_list);
+        function formatCurrency(amount) {
+            if (!amount) return 'Rp 0';
+            return 'Rp ' + parseInt(amount).toLocaleString('id-ID');
         }
 
-        function renderExpenseBreakdown(breakdown) {
-            const tbody = document.getElementById('expenseBreakdownBody');
-            tbody.innerHTML = '';
-            for (let cat in breakdown) {
-                if (cat === 'Bahan Baku / COGS') continue;
-                tbody.innerHTML += `<tr><td>${cat}</td><td class="text-right amount">${formatCurrency(breakdown[cat])}</td></tr>`;
+        function showLoading(show = true) {
+            document.getElementById('loading').classList.toggle('show', show);
+        }
+
+        function showAlert(message, type = 'success') {
+            const alertEl = document.getElementById(type + 'Alert');
+            alertEl.textContent = message;
+            alertEl.classList.add('show');
+            setTimeout(() => alertEl.classList.remove('show'), 4000);
+        }
+
+        function switchTab(tab, event) {
+            event.preventDefault();
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tab + '-tab').classList.add('active');
+            event.target.classList.add('active');
+            if (tab === 'report') refreshReport();
+        }
+
+        function changePeriod() { loadData(); }
+
+        async function loadData() {
+            try {
+                const m = parseInt(document.getElementById('monthSelect').value);
+                const y = parseInt(document.getElementById('yearSelect').value);
+                const data = await apiGet('getData', { bulan: m, tahun: y });
+
+                document.getElementById('totalRevenue').textContent = formatCurrency(data.revenue);
+                document.getElementById('totalExpenses').textContent = formatCurrency(data.expenses);
+                document.getElementById('netProfit').textContent = formatCurrency(data.profit);
+                document.getElementById('marginPct').textContent = (data.margin * 100).toFixed(1) + '%';
+                
+                document.getElementById('inv-target-hpp').textContent = formatCurrency(data.cogs_target);
+                document.getElementById('inv-aktual-hpp').textContent = formatCurrency(data.cogs_aktual);
+                const aktualCard = document.getElementById('aktualHppCard');
+                if (data.cogs_aktual > data.cogs_target) {
+                    aktualCard.style.borderLeftColor = 'var(--danger)';
+                    aktualCard.style.color = 'var(--danger)';
+                } else {
+                    aktualCard.style.borderLeftColor = 'var(--gold)';
+                    aktualCard.style.color = '';
+                }
+                
+                const profitCard = document.getElementById('profitCard');
+                data.profit < 0 ? profitCard.classList.add('loss') : profitCard.classList.remove('loss');
+                
+                loadExpenseBreakdown(data.expensesByCategory);
+                loadExpenseTable(data.expenses_list);
+            } catch (e) {
+                console.error(e);
             }
         }
 
-        function renderExpenseList(list) {
-            const tbody = document.getElementById('expenseLogBody');
+        function loadExpenseBreakdown(expenses) {
+            const tbody = document.getElementById('expenseBreakdownBody');
             tbody.innerHTML = '';
-            list.forEach(item => {
-                tbody.innerHTML += `<tr>
-                    <td>${item.date}</td><td>${item.category}</td><td>${item.description}</td>
-                    <td class="text-right amount">${formatCurrency(item.amount)}</td>
-                    <td class="text-center"><button class="btn-danger" onclick="deleteExpenseRow(${item.rowIndex})">Hapus</button></td>
-                </tr>`;
+            let total = 0;
+            for (let amount of Object.values(expenses)) total += amount;
+            for (let [category, amount] of Object.entries(expenses)) {
+                const pct = total > 0 ? ((amount / total) * 100).toFixed(1) : 0;
+                tbody.innerHTML += `<tr><td>${category}</td><td class="text-right amount">${formatCurrency(amount)}</td><td class="text-right">${pct}%</td></tr>`;
+            }
+        }
+
+        function loadExpenseTable(expenses) {
+            const tbody = document.getElementById('expenseTableBody');
+            tbody.innerHTML = '';
+            if (!expenses || expenses.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No expenses yet</td></tr>';
+                return;
+            }
+            expenses.forEach((expense) => {
+                tbody.innerHTML += `<tr><td>${expense.date}</td><td>${expense.category}</td><td>${expense.description}</td><td class="text-right amount">${formatCurrency(expense.amount)}</td><td class="text-center"><button class="btn-danger" onclick="deleteExpense(${expense.rowIndex})" style="padding: 4px 8px; font-size: 12px;">Delete</button></td></tr>`;
             });
         }
 
-        function handleFrontendFileParse(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                const data = new Uint8Array(evt.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
-                let headerIdx = rows.findIndex(r => r && r.includes('Menu') && r.includes('Qty'));
-                if (headerIdx === -1) { notify('Format ESB tidak valid', 'error'); return; }
+        async function addExpense() {
+            const date = document.getElementById('expenseDate').value;
+            const category = document.getElementById('expenseCategory').value;
+            const description = document.getElementById('expenseDescription').value;
+            const amount = parseFloat(document.getElementById('expenseAmount').value) || 0;
+            const payment = document.getElementById('expensePayment').value;
+            const notes = document.getElementById('expenseNotes').value;
 
-                const headers = rows[headerIdx];
-                const menuCol = headers.indexOf('Menu'), qtyCol = headers.indexOf('Qty'), totalCol = headers.indexOf('Grand Total');
-                posPayload = []; parsedRevenueGross = 0;
+            if (!date || !category || !description || amount <= 0) {
+                showAlert('Please fill all required fields', 'error');
+                return;
+            }
 
-                for (let i = headerIdx + 1; i < rows.length; i++) {
-                    const row = rows[i];
-                    if (!row || !row[menuCol]) continue;
-                    const qty = parseInt(String(row[qtyCol]).replace(/[^0-9-]/g, '')) || 0;
-                    const total = parseFloat(String(row[totalCol]).replace(/[^0-9.-]/g, '')) || 0;
-                    if (qty > 0) { posPayload.push({ name: String(row[menuCol]).trim(), qty }); parsedRevenueGross += total; }
+            await apiPost('addExpense', { date, category, description, amount, payment, notes });
+            showAlert('✨ Expense added successfully!');
+            document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('expenseCategory').value = '';
+            document.getElementById('expenseDescription').value = '';
+            document.getElementById('expenseAmount').value = '';
+            loadData();
+        }
+
+        async function deleteExpense(rowIndex) {
+            if (confirm('Delete this expense?')) {
+                await apiPost('deleteExpense', { rowIndex });
+                showAlert('✨ Expense deleted!');
+                loadData();
+            }
+        }
+
+        async function refreshReport() {
+            try {
+                const m = parseInt(document.getElementById('monthSelect').value);
+                const y = parseInt(document.getElementById('yearSelect').value);
+                const data = await apiGet('getReportData', { bulan: m, tahun: y });
+                const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+                document.getElementById('reportPeriod').textContent = 'Periode: ' + months[m-1] + ' ' + y;
+                document.getElementById('report-totalPenjualan').textContent = formatCurrency(data.revenue);
+                document.getElementById('report-otherIncome').textContent = formatCurrency(0);
+                document.getElementById('report-totalRevenue').textContent = formatCurrency(data.revenue);
+                document.getElementById('report-totalExpenses').textContent = formatCurrency(data.total_expenses);
+                
+                const profitRow = document.getElementById('report-netProfit');
+                profitRow.textContent = (data.profit >= 0 ? 'NET PROFIT' : 'NET LOSS') + ' : ' + formatCurrency(Math.abs(data.profit));
+                data.profit < 0 ? profitRow.classList.add('loss') : profitRow.classList.remove('loss');
+                document.getElementById('report-margin').textContent = (data.margin * 100).toFixed(1) + '%';
+
+                let expensesHtml = '';
+                for (let [category, amount] of Object.entries(data.expensesByCategory)) {
+                    if (amount > 0) {
+                        expensesHtml += `<div class="pl-row"><span>${category}</span><span class="amount">${formatCurrency(amount)}</span></div>`;
+                    }
                 }
-                document.getElementById('posParsedCount').textContent = posPayload.length + ' Item';
-                document.getElementById('posParsedRevenue').textContent = formatCurrency(parsedRevenueGross);
-                document.getElementById('posUploadSummary').style.display = 'block';
+                document.getElementById('report-expenses').innerHTML = expensesHtml;
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function printReport() { window.print(); }
+        function exportPDF() { showAlert('📥 PDF export feature coming soon!'); }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+            loadData();
+        });
+
+        let parsedSalesData = [];
+        let parsedTotalRevenue = 0;
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const json = XLSX.utils.sheet_to_json(firstSheet, {header: 1});
+                
+                parsedSalesData = [];
+                parsedTotalRevenue = 0;
+
+                let headerRowIdx = -1;
+                for (let i = 0; i < Math.min(20, json.length); i++) {
+                    if (json[i] && json[i].includes('Menu') && json[i].includes('Qty')) {
+                        headerRowIdx = i;
+                        break;
+                    }
+                }
+
+                if (headerRowIdx === -1) {
+                    showAlert('Gagal menemukan kolom Menu/Qty. Pastikan ini file Sales Menu Recapitulation ESB.', 'error');
+                    return;
+                }
+
+                const headers = json[headerRowIdx];
+                const menuIdx = headers.indexOf('Menu');
+                const qtyIdx = headers.indexOf('Qty');
+                const totalIdx = headers.indexOf('Grand Total');
+
+                for (let i = headerRowIdx + 1; i < json.length; i++) {
+                    const row = json[i];
+                    if (!row || row.length === 0) continue;
+                    
+                    const menuName = row[menuIdx];
+                    const qty = parseInt(row[qtyIdx]) || 0;
+                    const total = parseFloat(row[totalIdx]) || 0;
+
+                    if (menuName && qty > 0) {
+                        parsedSalesData.push({name: menuName.toString().trim(), qty: qty});
+                        parsedTotalRevenue += total;
+                    }
+                }
+
+                document.getElementById('uploadPreview').style.display = 'block';
+                document.getElementById('previewTotalOmzet').textContent = formatCurrency(parsedTotalRevenue);
             };
             reader.readAsArrayBuffer(file);
         }
 
-        async function executePosSync() {
-            const m = document.getElementById('monthSelect').value;
-            const y = document.getElementById('yearSelect').value;
-            await apiPost('processPosData', { salesItems: posPayload, totalRevenue: parsedRevenueGross, bulan: m, tahun: y });
-            notify('Sinkronisasi POS berhasil!');
-            document.getElementById('posUploadSummary').style.display = 'none';
+        async function submitPosData() {
+            if (parsedSalesData.length === 0) return;
+            await apiPost('processPosData', {
+                salesItems: parsedSalesData,
+                totalRevenue: parsedTotalRevenue,
+                bulan: parseInt(document.getElementById('monthSelect').value),
+                tahun: parseInt(document.getElementById('yearSelect').value)
+            });
+            showAlert('✨ Data POS tersimpan & Stok BOM terpotong otomatis!');
+            document.getElementById('uploadPreview').style.display = 'none';
             loadData();
         }
 
         async function loadInventory() {
-            const items = await apiGet('getInventory');
+            const data = await apiGet('getInventory');
             const tbody = document.getElementById('inventoryTableBody');
             tbody.innerHTML = '';
-            items.forEach(it => {
-                tbody.innerHTML += `<tr><td>${it.nama}</td><td>${it.satuan}</td><td>${it.qty.toFixed(2)}</td><td class="text-right amount">${formatCurrency(it.nilai)}</td></tr>`;
+            data.forEach(item => {
+                const isKritis = item.qty < 5 ? `<span style="background: var(--danger); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 8px;">KRITIS</span>` : '';
+                tbody.innerHTML += `<tr><td>${item.nama} ${isKritis}</td><td>${item.qty}</td><td>${item.satuan}</td><td class="text-right amount">${formatCurrency(item.nilai)}</td></tr>`;
             });
         }
-
-        async function submitExpense() {
-            const date = document.getElementById('expDate').value;
-            const category = document.getElementById('expCategory').value;
-            const amount = document.getElementById('expAmount').value;
-            const description = document.getElementById('expDescription').value;
-            const payment = document.getElementById('expPayment').value;
-            await apiPost('addExpense', { date, category, description, amount, payment, notes: '' });
-            notify('Pengeluaran dicatat!'); loadData();
-        }
-
-        async function deleteExpenseRow(rowIndex) {
-            if (!confirm('Hapus baris pengeluaran ini?')) return;
-            await apiPost('deleteExpense', { rowIndex });
-            notify('Terhapus!'); loadData();
-        }
-
-        async function refreshReport() {
-            const m = document.getElementById('monthSelect').value;
-            const y = document.getElementById('yearSelect').value;
-            const data = await apiGet('getData', { bulan: m, tahun: y });
-            document.getElementById('repRevenue').textContent = formatCurrency(data.revenue);
-            document.getElementById('repCogsTarget').textContent = formatCurrency(data.cogs_target);
-            document.getElementById('repGrossProfit').textContent = formatCurrency(data.revenue - data.cogs_target);
-            document.getElementById('repTotalOpex').textContent = formatCurrency(data.operating_expenses);
-            document.getElementById('repVariance').textContent = formatCurrency(data.operational_variance);
-            document.getElementById('repNetProfit').textContent = formatCurrency(data.profit);
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('expDate').value = new Date().toISOString().split('T')[0];
-            loadData();
-        });
     </script>
 </body>
 </html>
