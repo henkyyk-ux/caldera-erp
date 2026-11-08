@@ -278,7 +278,7 @@
                 </div>
 
                 <div class="panel">
-                    <div class="panel-title">Jurnal Kas Pengeluaran</div>
+                    <div class="panel-title">Jurnal Kas Pengeluaran Periode Ini</div>
                     <table>
                         <thead>
                             <tr><th>Tanggal</th><th>Kategori</th><th>Keterangan</th><th class="text-right">Nominal</th><th class="text-center">Aksi</th></tr>
@@ -427,7 +427,7 @@
         function renderExpenseList(list) {
             const tbody = document.getElementById('expenseLogBody');
             tbody.innerHTML = '';
-            if (!list || list.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="text-center">Belum ada transaksi</td></tr>'; return; }
+            if (!list || list.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="text-center">Belum ada transaksi pada periode ini</td></tr>'; return; }
             list.forEach(item => {
                 tbody.innerHTML += `<tr>
                     <td>${item.date}</td><td>${item.category}</td><td>${item.description}</td>
@@ -492,13 +492,16 @@
             const payment = document.getElementById('expPayment').value;
             if(!date || !category || !amount) { notify('Lengkapi tanggal, kategori, dan nominal!', 'error'); return; }
             await apiPost('addExpense', { date, category, description, amount, payment, notes: '' });
-            notify('OPEX berhasil dicatat!'); loadData();
+            notify('OPEX berhasil dicatat!'); 
+            document.getElementById('expAmount').value = '';
+            document.getElementById('expDescription').value = '';
+            loadData();
         }
 
         async function deleteExpenseRow(rowIndex) {
-            if (!confirm('Hapus baris pengeluaran ini?')) return;
+            if (!confirm('Hapus baris pengeluaran ini secara permanen?')) return;
             await apiPost('deleteExpense', { rowIndex });
-            notify('Terhapus!'); loadData();
+            notify('Pengeluaran berhasil dihapus!'); loadData();
         }
 
         async function refreshReport() {
