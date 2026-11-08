@@ -765,21 +765,40 @@
             }
         }
 
-        async function loadData() {
-            const m = document.getElementById('monthSelect').value;
-            const y = document.getElementById('yearSelect').value;
-            const data = await apiGet('getData', { bulan: m, tahun: y });
-            
-            document.getElementById('totalRevenue').textContent = formatCurrency(data.revenue);
-            document.getElementById('cogsTarget').textContent = formatCurrency(data.cogs_target);
-            document.getElementById('cogsAktual').textContent = formatCurrency(data.cogs_aktual);
-            document.getElementById('cogsVariance').textContent = formatCurrency(data.operational_variance);
-            document.getElementById('netProfit').textContent = formatCurrency(data.profit);
-            document.getElementById('marginPct').textContent = (data.margin * 100).toFixed(1) + '%';
+        // Ganti fungsi loadData yang lama dengan kode ini di index.html
+function loadData() {
+    showLoading(true);
+    const selectedMonth = parseInt(document.getElementById('monthSelect').value);
+    const selectedYear = parseInt(document.getElementById('yearSelect').value);
 
-            renderExpenseBreakdown(data.expensesByCategory);
-            renderExpenseList(data.expenses_list);
+    google.script.run.withSuccessHandler(function(data) {
+        document.getElementById('totalRevenue').textContent = formatCurrency(data.revenue);
+        document.getElementById('totalExpenses').textContent = formatCurrency(data.expenses);
+        document.getElementById('netProfit').textContent = formatCurrency(data.profit);
+        document.getElementById('marginPct').textContent = (data.margin * 100).toFixed(1) + '%';
+        
+        document.getElementById('inv-target-hpp').textContent = formatCurrency(data.cogs_target);
+        document.getElementById('inv-aktual-hpp').textContent = formatCurrency(data.cogs_aktual);
+        const aktualCard = document.getElementById('aktualHppCard');
+        if(data.cogs_aktual > data.cogs_target) {
+            aktualCard.style.borderLeftColor = 'var(--danger)';
+            aktualCard.style.color = 'var(--danger)';
+        } else {
+            aktualCard.style.borderLeftColor = 'var(--gold)';
+            aktualCard.style.color = '';
         }
+        
+        const profitCard = document.getElementById('profitCard');
+        data.profit < 0 ? profitCard.classList.add('loss') : profitCard.classList.remove('loss');
+        
+        loadExpenseBreakdown(data.expensesByCategory);
+        loadExpenseTable(data.expenses_list);
+        showLoading(false);
+    }).withFailureHandler(function(err) {
+        showAlert('Error: ' + err, 'error');
+        showLoading(false);
+    }).getData(selectedMonth, selectedYear);
+}
 
         function renderExpenseBreakdown(breakdown) {
             const tbody = document.getElementById('expenseBreakdownBody');
