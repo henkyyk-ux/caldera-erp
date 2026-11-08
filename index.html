@@ -409,49 +409,24 @@
             });
         }
 
-        function addExpense() {
-            const date = document.getElementById('expenseDate').value;
-            const category = document.getElementById('expenseCategory').value;
-            const description = document.getElementById('expenseDescription').value;
-            const amount = parseFloat(document.getElementById('expenseAmount').value) || 0;
-            const payment = document.getElementById('expensePayment').value;
-            const notes = document.getElementById('expenseNotes').value;
-
-            if (!date || !category || !description || amount <= 0) {
-                showAlert('Please fill all required fields', 'error');
-                return;
-            }
-
-            google.script.run.withSuccessHandler(function() {
-                showAlert('✨ Expense added successfully!');
-                document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
-                document.getElementById('expenseCategory').value = '';
-                document.getElementById('expenseDescription').value = '';
-                document.getElementById('expenseAmount').value = '';
-                document.getElementById('expensePayment').value = 'Cash';
-                document.getElementById('expenseNotes').value = '';
-                loadData();
-            }).withFailureHandler(function(err) {
-                showAlert('Error: ' + err, 'error');
-            }).addExpense(date, category, description, amount, payment, notes);
-        }
-
         function deleteExpense(rowIndex) {
             if (confirm('Delete this expense?')) {
+                showLoading(true);
                 google.script.run.withSuccessHandler(function() {
                     showAlert('✨ Expense deleted!');
                     loadData();
                 }).withFailureHandler(function(err) {
                     showAlert('Error: ' + err, 'error');
+                    showLoading(false);
                 }).deleteExpense(rowIndex);
             }
         }
 
         function refreshReport() {
-            const month = parseInt(document.getElementById('monthSelect').value);
-            const year = parseInt(document.getElementById('yearSelect').value);
-
+            showLoading(true);
             google.script.run.withSuccessHandler(function(data) {
+                const month = parseInt(document.getElementById('monthSelect').value);
+                const year = parseInt(document.getElementById('yearSelect').value);
                 const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
                 document.getElementById('reportPeriod').textContent = 'Periode: ' + months[month-1] + ' ' + year;
@@ -461,7 +436,9 @@
                 document.getElementById('report-totalExpenses').textContent = formatCurrency(data.expenses);
                 
                 const profitRow = document.getElementById('report-netProfit');
-                profitRow.textContent = (data.profit >= 0 ? 'NET PROFIT' : 'NET LOSS') + ' : ' + formatCurrency(Math.abs(data.profit));
+                profitRow.querySelector('span:first-child').textContent = data.profit >= 0 ? 'NET PROFIT' : 'NET LOSS';
+                profitRow.querySelector('span:last-child').textContent = formatCurrency(Math.abs(data.profit));
+                
                 data.profit < 0 ? profitRow.classList.add('loss') : profitRow.classList.remove('loss');
                 document.getElementById('report-margin').textContent = (data.margin * 100).toFixed(1) + '%';
 
@@ -475,9 +452,14 @@
                     expensesHtml += `<div class="pl-row" style="color: var(--danger);"><span>Beban Waste / Varians Bar</span><span class="amount">${formatCurrency(data.operational_variance)}</span></div>`;
                 }
                 document.getElementById('report-expenses').innerHTML = expensesHtml;
+                showLoading(false);
             }).withFailureHandler(function(err) {
                 showAlert('Error: ' + err, 'error');
-            }).getReportData(month, year);
+                showLoading(false);
+            }).getReportData(
+                parseInt(document.getElementById('monthSelect').value),
+                parseInt(document.getElementById('yearSelect').value)
+            );
         }
 
         function printReport() { window.print(); }
