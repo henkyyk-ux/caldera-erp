@@ -317,29 +317,29 @@
         }
 
         function showLoading(show = true) {
-            const loader = document.getElementById('loading');
-            if (loader) {
-                if (show) loader.classList.add('show');
-                else loader.classList.remove('show');
+            if (show) {
+                document.getElementById('loading').classList.add('show');
+            } else {
+                document.getElementById('loading').classList.remove('show');
             }
         }
 
         function showAlert(message, type = 'success') {
             const alertEl = document.getElementById(type + 'Alert');
-            if (!alertEl) return;
             alertEl.textContent = message;
             alertEl.classList.add('show');
             setTimeout(() => alertEl.classList.remove('show'), 4000);
         }
 
         function switchTab(tab, event) {
-            if (event) event.preventDefault();
+            event.preventDefault();
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            const target = document.getElementById(tab + '-tab');
-            if (target) target.classList.add('active');
-            if (event && event.currentTarget) event.currentTarget.classList.add('active');
+            const targetTab = document.getElementById(tab + '-tab');
+            if (targetTab) targetTab.classList.add('active');
+            event.currentTarget.classList.add('active');
             if (tab === 'report') refreshReport();
+            if (tab === 'inventory') loadInventory();
         }
 
         function changePeriod() { loadData(); }
@@ -349,48 +349,43 @@
             const month = parseInt(document.getElementById('monthSelect').value);
             const year = parseInt(document.getElementById('yearSelect').value);
 
-            google.script.run
-                .withSuccessHandler(function(data) {
-                    document.getElementById('totalRevenue').textContent = formatCurrency(data.revenue);
-                    document.getElementById('totalExpenses').textContent = formatCurrency(data.expenses);
-                    document.getElementById('netProfit').textContent = formatCurrency(data.profit);
-                    document.getElementById('marginPct').textContent = (data.margin * 100).toFixed(1) + '%';
-                    
-                    document.getElementById('inv-target-hpp').textContent = formatCurrency(data.cogs_target);
-                    document.getElementById('inv-aktual-hpp').textContent = formatCurrency(data.cogs_aktual);
-                    
-                    const aktualCard = document.getElementById('aktualHppCard');
-                    if(data.cogs_aktual > data.cogs_target) {
-                        aktualCard.style.borderLeftColor = 'var(--danger)';
-                    } else {
-                        aktualCard.style.borderLeftColor = 'var(--gold)';
-                    }
-                    
-                    const profitCard = document.getElementById('profitCard');
-                    if (data.profit < 0) {
-                        profitCard.classList.add('loss');
-                    } else {
-                        profitCard.classList.remove('loss');
-                    }
-                    
-                    loadExpenseBreakdown(data.expensesByCategory);
-                    loadExpenseTable(data.expenses_list);
-                    showLoading(false);
-                })
-                .withFailureHandler(function(err) {
-                    showAlert('Error: ' + err.message, 'error');
-                    showLoading(false);
-                })
-                .getData(month, year);
+            google.script.run.withSuccessHandler(function(data) {
+                document.getElementById('totalRevenue').textContent = formatCurrency(data.revenue);
+                document.getElementById('totalExpenses').textContent = formatCurrency(data.expenses);
+                document.getElementById('netProfit').textContent = formatCurrency(data.profit);
+                document.getElementById('marginPct').textContent = (data.margin * 100).toFixed(1) + '%';
+                
+                document.getElementById('inv-target-hpp').textContent = formatCurrency(data.cogs_target);
+                document.getElementById('inv-aktual-hpp').textContent = formatCurrency(data.cogs_aktual);
+                
+                const aktualCard = document.getElementById('aktualHppCard');
+                if(data.cogs_aktual > data.cogs_target) {
+                    aktualCard.style.borderLeftColor = 'var(--danger)';
+                    aktualCard.style.color = 'var(--danger)';
+                } else {
+                    aktualCard.style.borderLeftColor = 'var(--gold)';
+                    aktualCard.style.color = '';
+                }
+                
+                const profitCard = document.getElementById('profitCard');
+                data.profit < 0 ? profitCard.classList.add('loss') : profitCard.classList.remove('loss');
+                
+                loadExpenseBreakdown(data.expensesByCategory);
+                loadExpenseTable(data.expenses_list);
+                showLoading(false);
+            }).withFailureHandler(function(err) {
+                showAlert('Error: ' + err, 'error');
+                showLoading(false);
+            }).getData(month, year);
         }
 
         function loadExpenseBreakdown(expenses) {
             const tbody = document.getElementById('expenseBreakdownBody');
-            if (!tbody) return;
             tbody.innerHTML = '';
             let total = 0;
             for (let amount of Object.values(expenses)) total += amount;
             for (let [category, amount] of Object.entries(expenses)) {
+                if (category === 'Bahan Baku / COGS') continue; // Sesuai prinsip arus kas stok
                 const pct = total > 0 ? ((amount / total) * 100).toFixed(1) : 0;
                 tbody.innerHTML += `<tr><td>${category}</td><td class="text-right amount">${formatCurrency(amount)}</td><td class="text-right">${pct}%</td></tr>`;
             }
@@ -398,14 +393,19 @@
 
         function loadExpenseTable(expenses) {
             const tbody = document.getElementById('expenseTableBody');
-            if (!tbody) return;
             tbody.innerHTML = '';
             if (!expenses || expenses.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No expenses yet</td></tr>';
                 return;
             }
             expenses.forEach((expense) => {
-                tbody.innerHTML += `<tr><td>${expense.date}</td><td>${expense.category}</td><td>${expense.description}</td><td class="text-right amount">${formatCurrency(expense.amount)}</td><td class="text-center"><button class="btn-danger" onclick="deleteExpense(${expense.rowIndex})" style="padding: 4px 8px; font-size: 12px;">Delete</button></td></tr>`;
+                tbody.innerHTML += `<tr>
+                    <td>${expense.date}</td>
+                    <td>${expense.category}</td>
+                    <td>${expense.description}</td>
+                    <td class="text-right amount">${formatCurrency(expense.amount)}</td>
+                    <td class="text-center"><button class="btn-danger" onclick="deleteExpense(${expense.rowIndex})" style="padding: 4px 8px; font-size: 12px;">Delete</button></td>
+                </tr>`;
             });
         }
 
@@ -422,33 +422,28 @@
                 return;
             }
 
-            google.script.run
-                .withSuccessHandler(function() {
-                    showAlert('✨ Expense added successfully!');
-                    document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
-                    document.getElementById('expenseCategory').value = '';
-                    document.getElementById('expenseDescription').value = '';
-                    document.getElementById('expenseAmount').value = '';
-                    document.getElementById('expenseNotes').value = '';
-                    loadData();
-                })
-                .withFailureHandler(function(err) {
-                    showAlert('Error: ' + err.message, 'error');
-                })
-                .addExpense(date, category, description, amount, payment, notes);
+            google.script.run.withSuccessHandler(function() {
+                showAlert('✨ Expense added successfully!');
+                document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+                document.getElementById('expenseCategory').value = '';
+                document.getElementById('expenseDescription').value = '';
+                document.getElementById('expenseAmount').value = '';
+                document.getElementById('expensePayment').value = 'Cash';
+                document.getElementById('expenseNotes').value = '';
+                loadData();
+            }).withFailureHandler(function(err) {
+                showAlert('Error: ' + err, 'error');
+            }).addExpense(date, category, description, amount, payment, notes);
         }
 
         function deleteExpense(rowIndex) {
             if (confirm('Delete this expense?')) {
-                google.script.run
-                    .withSuccessHandler(function() {
-                        showAlert('✨ Expense deleted!');
-                        loadData();
-                    })
-                    .withFailureHandler(function(err) {
-                        showAlert('Error: ' + err.message, 'error');
-                    })
-                    .deleteExpense(rowIndex);
+                google.script.run.withSuccessHandler(function() {
+                    showAlert('✨ Expense deleted!');
+                    loadData();
+                }).withFailureHandler(function(err) {
+                    showAlert('Error: ' + err, 'error');
+                }).deleteExpense(rowIndex);
             }
         }
 
@@ -456,37 +451,37 @@
             const month = parseInt(document.getElementById('monthSelect').value);
             const year = parseInt(document.getElementById('yearSelect').value);
 
-            google.script.run
-                .withSuccessHandler(function(data) {
-                    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-                    document.getElementById('reportPeriod').textContent = 'Periode: ' + months[month-1] + ' ' + year;
-                    document.getElementById('report-totalPenjualan').textContent = formatCurrency(data.revenue);
-                    document.getElementById('report-otherIncome').textContent = formatCurrency(0);
-                    document.getElementById('report-totalRevenue').textContent = formatCurrency(data.revenue);
-                    document.getElementById('report-totalExpenses').textContent = formatCurrency(data.expenses);
-                    
-                    const profitRow = document.getElementById('report-netProfit');
-                    profitRow.querySelector('span:first-child').textContent = data.profit >= 0 ? 'NET PROFIT' : 'NET LOSS';
-                    profitRow.querySelector('span:last-child').textContent = formatCurrency(Math.abs(data.profit));
-                    
-                    if (data.profit < 0) profitRow.classList.add('loss');
-                    else profitRow.classList.remove('loss');
-                    
-                    document.getElementById('report-margin').textContent = (data.margin * 100).toFixed(1) + '%';
+            google.script.run.withSuccessHandler(function(data) {
+                const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
-                    let expensesHtml = '';
-                    for (let [category, amount] of Object.entries(data.expensesByCategory)) {
-                        if (amount > 0) {
-                            expensesHtml += `<div class="pl-row"><span>${category}</span><span class="amount">${formatCurrency(amount)}</span></div>`;
-                        }
+                document.getElementById('reportPeriod').textContent = 'Periode: ' + months[month-1] + ' ' + year;
+                document.getElementById('report-totalPenjualan').textContent = formatCurrency(data.revenue);
+                document.getElementById('report-otherIncome').textContent = formatCurrency(0);
+                document.getElementById('report-totalRevenue').textContent = formatCurrency(data.revenue);
+                document.getElementById('report-totalExpenses').textContent = formatCurrency(data.expenses);
+                
+                const profitRow = document.getElementById('report-netProfit');
+                profitRow.textContent = (data.profit >= 0 ? 'NET PROFIT' : 'NET LOSS') + ' : ' + formatCurrency(Math.abs(data.profit));
+                data.profit < 0 ? profitRow.classList.add('loss') : profitRow.classList.remove('loss');
+                document.getElementById('report-margin').textContent = (data.margin * 100).toFixed(1) + '%';
+
+                let expensesHtml = `<div class="pl-row"><span>HPP Target Owner (70%)</span><span class="amount">${formatCurrency(data.cogs_target)}</span></div>`;
+                for (let [category, amount] of Object.entries(data.expensesByCategory)) {
+                    if (category !== 'Bahan Baku / COGS' && amount > 0) {
+                        expensesHtml += `<div class="pl-row"><span>${category}</span><span class="amount">${formatCurrency(amount)}</span></div>`;
                     }
-                    document.getElementById('report-expenses').innerHTML = expensesHtml;
-                })
-                .withFailureHandler(function(err) {
-                    showAlert('Error: ' + err.message, 'error');
-                })
-                .getReportData(month, year);
+                }
+                if (data.operational_variance > 0) {
+                    expensesHtml += `<div class="pl-row" style="color: var(--danger);"><span>Beban Waste / Varians Bar</span><span class="amount">${formatCurrency(data.operational_variance)}</span></div>`;
+                }
+                document.getElementById('report-expenses').innerHTML = expensesHtml;
+            }).withFailureHandler(function(err) {
+                showAlert('Error: ' + err, 'error');
+            }).getReportData(month, year);
         }
+
+        function printReport() { window.print(); }
+        function exportPDF() { showAlert('📥 PDF export feature coming soon!'); }
 
         let parsedSalesData = [];
         let parsedTotalRevenue = 0;
@@ -549,37 +544,29 @@
             const month = parseInt(document.getElementById('monthSelect').value);
             const year = parseInt(document.getElementById('yearSelect').value);
 
-            google.script.run
-                .withSuccessHandler(function() {
-                    showAlert('✨ Data POS tersimpan & Stok BOM terpotong otomatis!');
-                    document.getElementById('uploadPreview').style.display = 'none';
-                    loadData();
-                })
-                .withFailureHandler(function(err) {
-                    showAlert('Error: ' + err.message, 'error');
-                    showLoading(false);
-                })
-                .processPosData(parsedSalesData, parsedTotalRevenue, month, year);
+            google.script.run.withSuccessHandler(function() {
+                showAlert('✨ Data POS tersimpan & Stok BOM terpotong otomatis!');
+                document.getElementById('uploadPreview').style.display = 'none';
+                loadData();
+            }).withFailureHandler(function(err) {
+                showAlert('Error: ' + err, 'error');
+                showLoading(false);
+            }).processPosData(parsedSalesData, parsedTotalRevenue, month, year);
         }
 
         function loadInventory() {
-            google.script.run
-                .withSuccessHandler(function(data) {
-                    const tbody = document.getElementById('inventoryTableBody');
-                    tbody.innerHTML = '';
-                    if (!data || data.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Data inventaris kosong</td></tr>';
-                        return;
-                    }
-                    data.forEach(item => {
-                        const isKritis = item.qty < 5 ? `<span style="background: var(--danger); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 8px;">KRITIS</span>` : '';
-                        tbody.innerHTML += `<tr><td>${item.nama} ${isKritis}</td><td>${item.qty}</td><td>${item.satuan}</td><td class="text-right amount">${formatCurrency(item.nilai)}</td></tr>`;
-                    });
-                })
-                .withFailureHandler(function(err) {
-                    showAlert('Error: ' + err.message, 'error');
-                })
-                .getInventoryData();
+            google.script.run.withSuccessHandler(function(data) {
+                const tbody = document.getElementById('inventoryTableBody');
+                tbody.innerHTML = '';
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Data inventaris kosong</td></tr>';
+                    return;
+                }
+                data.forEach(item => {
+                    const isKritis = item.qty < 5 ? `<span style="background: var(--danger); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 8px;">KRITIS</span>` : '';
+                    tbody.innerHTML += `<tr><td>${item.nama} ${isKritis}</td><td>${item.qty}</td><td>${item.satuan}</td><td class="text-right amount">${formatCurrency(item.nilai)}</td></tr>`;
+                });
+            }).getInventoryData();
         }
 
         document.addEventListener('DOMContentLoaded', function() {
