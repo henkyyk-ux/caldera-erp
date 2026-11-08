@@ -3,140 +3,498 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cosmology Coffee / Cafe Caldera - ERP Executive Suite</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>DealDeck - Cosmology Coffee / Caldera ERP</title>
+    <!-- Font Plus Jakarta Sans & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
         :root {
-            --gold: #D4AF37; --gold-light: #F3E5AB; --gold-dark: #997A15;
-            --dark-bg: #0A0A0C; --dark-card: #121216; --dark-sidebar: #0E0E12; --dark-accent: #1A1A22;
-            --text-main: #F4F4F6; --text-muted: #8E8E9A;
-            --success: #2ECC71; --danger: #E74C3C; --warning: #F39C12; --info: #3498DB;
-            --border-gold: rgba(212, 175, 55, 0.2); --border-card: rgba(255, 255, 255, 0.05);
-            --shadow-gold: 0 8px 32px rgba(212, 175, 55, 0.1);
+            /* Palet Warna DealDeck UI */
+            --bg-body: #F4F7FE;
+            --bg-card: #FFFFFF;
+            --bg-sidebar: #FFFFFF;
+            --accent-blue: #4318FF;
+            --accent-blue-hover: #3311CC;
+            --accent-blue-light: #F4F7FF;
+            --text-dark: #2B3674;
+            --text-muted: #A3AED0;
+            --text-gray: #707EAE;
+            --border-color: #E9EDF7;
+            
+            --success: #05CD99;
+            --success-light: #E6F9F5;
+            --danger: #EE5D50;
+            --danger-light: #FDEEEE;
+            --warning: #FFB547;
+            --warning-light: #FFF8EC;
+
+            --radius-card: 20px;
+            --radius-btn: 12px;
+            --shadow-soft: 0px 18px 40px rgba(112, 144, 176, 0.12);
         }
+
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif; background: var(--dark-bg);
-            color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-dark);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
-        /* Sidebar Navigation */
+
+        /* --- SIDEBAR NAVIGATION --- */
         aside {
-            width: 260px; background: var(--dark-sidebar); border-right: 1px solid var(--border-card);
-            display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100;
+            width: 280px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            padding: 30px 20px;
         }
-        .sidebar-brand {
-            padding: 24px 20px; display: flex; align-items: center; gap: 12px;
-            border-bottom: 1px solid var(--border-card);
+
+        .brand-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
         }
+
         .brand-icon {
-            width: 38px; height: 38px; background: linear-gradient(135deg, var(--gold-light), var(--gold-dark));
-            border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #000; font-size: 18px;
+            width: 42px;
+            height: 42px;
+            background: var(--accent-blue);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 20px;
+            font-weight: 800;
         }
-        .brand-name { font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700; color: var(--gold-light); }
-        .sidebar-menu { padding: 20px 12px; display: flex; flex-direction: column; gap: 6px; flex: 1; overflow-y: auto; }
-        .tab-btn {
-            width: 100%; text-align: left; padding: 12px 16px; background: transparent; border: none;
-            color: var(--text-muted); font-size: 13px; font-weight: 500; border-radius: 8px; cursor: pointer;
-            display: flex; align-items: center; gap: 12px; transition: all 0.2s ease; text-transform: uppercase; letter-spacing: 0.5px;
-        }
-        .tab-btn:hover { background: var(--dark-accent); color: var(--text-main); }
-        .tab-btn.active { background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05)); color: var(--gold-light); border-left: 3px solid var(--gold); }
 
-        /* Main Wrapper */
-        .main-wrapper { flex: 1; margin-left: 260px; display: flex; flex-direction: column; min-height: 100vh; }
+        .brand-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-dark);
+            letter-spacing: -0.5px;
+        }
+
+        .menu-category {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 15px 0 10px 12px;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .nav-link {
+            width: 100%;
+            text-align: left;
+            padding: 14px 18px;
+            background: transparent;
+            border: none;
+            color: var(--text-gray);
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: var(--radius-btn);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: all 0.25s ease;
+        }
+
+        .nav-link:hover {
+            background: var(--accent-blue-light);
+            color: var(--accent-blue);
+        }
+
+        .nav-link.active {
+            background: var(--accent-blue);
+            color: #FFFFFF;
+            box-shadow: 0px 10px 20px rgba(67, 24, 255, 0.2);
+        }
+
+        /* --- MAIN CONTENT AREA --- */
+        .main-wrapper {
+            flex: 1;
+            margin-left: 280px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
         header {
-            background: rgba(18, 18, 22, 0.8); border-bottom: 1px solid var(--border-card);
-            padding: 16px 32px; display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 90; backdrop-filter: blur(12px);
+            padding: 25px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: transparent;
         }
-        .welcome-text { font-size: 15px; font-weight: 600; color: var(--text-main); }
-        .period-box { display: flex; gap: 10px; background: var(--dark-accent); padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border-card); }
-        .period-box select { background: transparent; color: var(--text-main); border: none; padding: 4px 8px; font-size: 13px; font-weight: 600; cursor: pointer; outline: none; }
-        .period-box select option { background: var(--dark-card); }
 
-        .container { padding: 32px; max-width: 1200px; width: 100%; margin: 0 auto; }
-        
-        /* Metrics Grid */
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .metric-card {
-            background: var(--dark-card); border: 1px solid var(--border-card); border-radius: 12px;
-            padding: 20px; position: relative; overflow: hidden; box-shadow: var(--shadow-gold);
+        .header-title h1 {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-dark);
         }
-        .metric-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: var(--gold); }
-        .metric-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; font-weight: 700; }
-        .metric-num { font-size: 26px; font-weight: 700; color: var(--gold-light); margin: 8px 0 2px 0; font-family: 'Cinzel', serif; }
-        .metric-sub { font-size: 11px; color: var(--text-muted); }
 
-        /* Panels & Cards */
-        .panel { background: var(--dark-card); border: 1px solid var(--border-card); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
-        .panel-title { font-family: 'Cinzel', serif; font-size: 18px; color: var(--gold-light); margin-bottom: 20px; }
-        
-        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px; }
-        .form-group { margin-bottom: 14px; }
-        label { display: block; font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
+        .header-title p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .period-selector-box {
+            display: flex;
+            gap: 10px;
+            background: var(--bg-card);
+            padding: 8px 16px;
+            border-radius: 30px;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-color);
+        }
+
+        .period-selector-box select {
+            background: transparent;
+            color: var(--text-dark);
+            border: none;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .content-container {
+            padding: 0 40px 40px 40px;
+            width: 100%;
+        }
+
+        /* --- METRICS GRID CARDS --- */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card-stat {
+            background: var(--bg-card);
+            border-radius: var(--radius-card);
+            padding: 22px 24px;
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            transition: transform 0.2s ease;
+        }
+
+        .card-stat:hover {
+            transform: translateY(-3px);
+        }
+
+        .card-stat.highlight-blue {
+            background: linear-gradient(135deg, #868CFF 0%, #4318FF 100%);
+            color: #FFFFFF;
+        }
+
+        .card-stat.highlight-blue .stat-label,
+        .card-stat.highlight-blue .stat-sub {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .card-stat.highlight-blue .stat-value {
+            color: #FFFFFF;
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--bg-body);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .badge-trend {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .badge-trend.up { background: var(--success-light); color: var(--success); }
+        .badge-trend.down { background: var(--danger-light); color: var(--danger); }
+        .badge-trend.warn { background: var(--warning-light); color: var(--warning); }
+
+        .stat-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-top: 15px;
+        }
+
+        .stat-value {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin: 6px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .stat-sub {
+            font-size: 12px;
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+
+        /* --- PANELS & TABLES --- */
+        .panel {
+            background: var(--bg-card);
+            border-radius: var(--radius-card);
+            padding: 28px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 24px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-dark);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-group { margin-bottom: 16px; }
+
+        label {
+            display: block;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
         input, select {
-            width: 100%; padding: 10px 14px; background: var(--dark-accent); border: 1px solid var(--border-card);
-            border-radius: 8px; color: var(--text-main); font-size: 13px; transition: border-color 0.2s;
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-dark);
+            font-size: 13px;
+            font-weight: 600;
+            outline: none;
+            transition: all 0.2s ease;
         }
-        input:focus, select:focus { border-color: var(--gold); outline: none; }
 
-        button {
-            padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 12px;
-            text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; border: none; transition: all 0.2s;
+        input:focus, select:focus {
+            border-color: var(--accent-blue);
+            background: #FFFFFF;
         }
-        .btn-gold { background: linear-gradient(135deg, var(--gold-light), var(--gold-dark)); color: #000; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2); }
-        .btn-gold:hover { opacity: 0.9; transform: translateY(-1px); }
-        .btn-outline { background: transparent; color: var(--text-main); border: 1px solid var(--border-gold); }
-        .btn-outline:hover { background: var(--dark-accent); color: var(--gold-light); }
-        .btn-danger { background: rgba(231, 76, 60, 0.15); color: var(--danger); border: 1px solid rgba(231, 76, 60, 0.3); }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border-card); font-size: 13px; }
-        th { color: var(--gold); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; background: rgba(212, 175, 55, 0.03); }
-        .num { font-family: 'Cinzel', serif; font-weight: 600; color: var(--gold-light); }
-        .text-right { text-align: right; } .text-center { text-align: center; }
-        
-        .badge { padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
-        .badge-lunas { background: rgba(46, 204, 113, 0.15); color: var(--success); }
-        .badge-parsial { background: rgba(243, 156, 18, 0.15); color: var(--warning); }
-        .badge-unpaid { background: rgba(231, 76, 60, 0.15); color: var(--danger); }
-        
-        .pl-line { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-card); font-size: 13px; }
-        .pl-line.bold { font-weight: 700; background: rgba(212, 175, 55, 0.05); padding: 12px 14px; border-radius: 8px; margin: 8px 0; }
-        .pl-line.hero-profit { background: rgba(46, 204, 113, 0.1); padding: 16px; border-radius: 8px; border: 1px solid rgba(46, 204, 113, 0.3); font-weight: 700; font-size: 16px; color: var(--success); }
-        
-        .toast { padding: 14px 20px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; display: none; }
+        button.btn-primary {
+            padding: 12px 24px;
+            border-radius: var(--radius-btn);
+            font-weight: 700;
+            font-size: 13px;
+            background: var(--accent-blue);
+            color: #FFFFFF;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0px 10px 20px rgba(67, 24, 255, 0.25);
+            transition: all 0.2s ease;
+        }
+
+        button.btn-primary:hover {
+            background: var(--accent-blue-hover);
+            transform: translateY(-2px);
+        }
+
+        button.btn-danger {
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            background: var(--danger-light);
+            color: var(--danger);
+            border: none;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th {
+            color: var(--text-muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        tr:last-child td { border-bottom: none; }
+
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+
+        .pl-row-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .pl-row-item.bold-total {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--accent-blue);
+            background: var(--accent-blue-light);
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin: 12px 0;
+            border: none;
+        }
+
+        .pl-row-item.hero-net-profit {
+            background: linear-gradient(135deg, #05CD99 0%, #04B486 100%);
+            color: #FFFFFF;
+            padding: 20px;
+            border-radius: 14px;
+            font-size: 18px;
+            font-weight: 800;
+            margin-top: 16px;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Toast Alert & Loading Spinner */
+        .toast {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            display: none;
+        }
         .toast.show { display: block; }
-        .toast-success { background: rgba(46, 204, 113, 0.15); color: var(--success); border-left: 4px solid var(--success); }
-        .toast-error { background: rgba(231, 76, 60, 0.15); color: var(--danger); border-left: 4px solid var(--danger); }
-        
-        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 999; justify-content: center; align-items: center; }
+        .toast-success { background: var(--success-light); color: var(--success); }
+        .toast-error { background: var(--danger-light); color: var(--danger); }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.7);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
         .overlay.show { display: flex; }
-        .spinner { border: 3px solid rgba(212, 175, 55, 0.15); border-top: 3px solid var(--gold); border-radius: 50%; width: 40px; height: 40px; animation: spin 0.8s linear infinite; }
+        .spinner {
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--accent-blue);
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            animation: spin 0.8s linear infinite;
+        }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
+
+    <!-- SIDEBAR NAVIGATION -->
     <aside>
-        <div class="sidebar-brand">
-            <div class="brand-icon">☕</div>
-            <div class="brand-name">CALDERA & COSMOLOGY</div>
+        <div class="brand-header">
+            <div class="brand-icon">C</div>
+            <div class="brand-title">DealDeck</div>
         </div>
+
+        <div class="menu-category">MENU</div>
         <div class="sidebar-menu">
-            <button class="tab-btn active" onclick="switchTab('dashboard', event)">📊 Dashboard</button>
-            <button class="tab-btn" onclick="switchTab('invoicing', event); loadInvoices();">🧾 Invoice & AR</button>
-            <button class="tab-btn" onclick="switchTab('pos', event)">📥 Upload ESB POS</button>
-            <button class="tab-btn" onclick="switchTab('inventory', event); loadInventory();">📦 Inventory & BOM</button>
-            <button class="tab-btn" onclick="switchTab('expenses', event)">📝 Expenses / OPEX</button>
-            <button class="tab-btn" onclick="switchTab('report', event); refreshReport();">📄 P&L Report</button>
+            <button class="nav-link active" onclick="switchTab('dashboard', event)">
+                <span>📊</span> Dashboard
+            </button>
+            <button class="nav-link" onclick="switchTab('pos', event)">
+                <span>📥</span> POS Import
+            </button>
+            <button class="nav-link" onclick="switchTab('inventory', event)">
+                <span>📦</span> Inventory & BOM
+            </button>
+            <button class="nav-link" onclick="switchTab('expenses', event)">
+                <span>📝</span> Expenses / OPEX
+            </button>
+            <button class="nav-link" onclick="switchTab('report', event)">
+                <span>📄</span> P&L Report
+            </button>
         </div>
     </aside>
 
+    <!-- MAIN WRAPPER -->
     <div class="main-wrapper">
         <header>
-            <div class="welcome-text">Welcome, Executive ☕</div>
-            <div class="period-box">
+            <div class="header-title">
+                <h1 id="pageTitle">Financial Dashboard</h1>
+                <p>Cosmology Coffee / Cafe Caldera Systems</p>
+            </div>
+            <div class="period-selector-box">
+                <span>📅</span>
                 <select id="monthSelect" onchange="loadData()">
                     <option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option>
                     <option value="4">April</option><option value="5">Mei</option><option value="6">Juni</option>
@@ -149,86 +507,88 @@
             </div>
         </header>
 
-        <div class="container">
+        <div class="content-container">
             <div class="toast toast-success" id="successAlert"></div>
             <div class="toast toast-error" id="errorAlert"></div>
 
+            <!-- TOP METRICS GRID CARDS -->
             <div class="metrics-grid">
-                <div class="metric-card">
-                    <div class="metric-label">Cash Revenue</div>
-                    <div class="metric-num" id="totalRevenue">Rp 0</div>
-                    <div class="metric-sub">Omzet POS + Pelunasan AR</div>
+                <div class="card-stat highlight-blue">
+                    <div class="stat-header">
+                        <span class="stat-label">Total Revenue</span>
+                        <span class="badge-trend up" style="background:rgba(255,255,255,0.2); color:#fff;">POS Omzet</span>
+                    </div>
+                    <div class="stat-value" id="totalRevenue">Rp 0</div>
+                    <div class="stat-sub">Pendapatan Kotor Bulanan</div>
                 </div>
-                <div class="metric-card">
-                    <div class="metric-label">HPP Target (70%)</div>
-                    <div class="metric-num" id="cogsTarget">Rp 0</div>
-                    <div class="metric-sub">Standar Margin Owner</div>
+
+                <div class="card-stat">
+                    <div class="stat-header">
+                        <span class="stat-label">HPP Target (70%)</span>
+                        <span class="badge-trend up">Lock Owner</span>
+                    </div>
+                    <div class="stat-value" id="cogsTarget">Rp 0</div>
+                    <div class="stat-sub">Beban Pokok Standar</div>
                 </div>
-                <div class="metric-card">
-                    <div class="metric-label">Aktual HPP (BOM)</div>
-                    <div class="metric-num" id="cogsAktual">Rp 0</div>
-                    <div class="metric-sub">Pemotongan Stok Riil</div>
+
+                <div class="card-stat">
+                    <div class="stat-header">
+                        <span class="stat-label">Aktual HPP (BOM)</span>
+                        <span class="badge-trend warn">Real Cook</span>
+                    </div>
+                    <div class="stat-value" id="cogsAktual">Rp 0</div>
+                    <div class="stat-sub">Pemotongan Bahan Riil</div>
                 </div>
-                <div class="metric-card">
-                    <div class="metric-label">Beban Waste Bar</div>
-                    <div class="metric-num" id="cogsVariance" style="color: var(--warning);">Rp 0</div>
-                    <div class="metric-sub">Selisih Aktual vs Target</div>
+
+                <div class="card-stat">
+                    <div class="stat-header">
+                        <span class="stat-label">Beban Waste Bar</span>
+                        <span class="badge-trend down" id="badgeWasteTrend">Varians</span>
+                    </div>
+                    <div class="stat-value" id="cogsVariance" style="color: var(--danger);">Rp 0</div>
+                    <div class="stat-sub">Inefisiensi Operasional</div>
                 </div>
-                <div class="metric-card" id="profitCard">
-                    <div class="metric-label">Net Profit Bersih</div>
-                    <div class="metric-num" id="netProfit">Rp 0</div>
-                    <div class="metric-sub">Margin: <strong id="marginPct">0%</strong></div>
+
+                <div class="card-stat">
+                    <div class="stat-header">
+                        <span class="stat-label">Net Profit Bersih</span>
+                        <span class="badge-trend up" id="marginPct">0%</span>
+                    </div>
+                    <div class="stat-value" id="netProfit" style="color: var(--success);">Rp 0</div>
+                    <div class="stat-sub">Laba Bersih Akhir</div>
                 </div>
             </div>
 
             <!-- DASHBOARD TAB -->
             <div class="tab-content active" id="dashboard-tab">
                 <div class="panel">
-                    <div class="panel-title">Struktur Beban Operasional (OPEX)</div>
+                    <div class="panel-header">
+                        <div class="panel-title">Struktur Beban Operasional (OPEX)</div>
+                    </div>
                     <table>
-                        <thead><tr><th>Kategori Beban</th><th class="text-right">Nominal</th><th class="text-right">% Proporsi</th></tr></thead>
-                        <tbody id="expenseBreakdownBody"><tr><td colspan="3" class="text-center">Memuat data...</td></tr></tbody>
+                        <thead>
+                            <tr><th>Kategori Beban</th><th class="text-right">Nominal</th><th class="text-right">% Proporsi</th></tr>
+                        </thead>
+                        <tbody id="expenseBreakdownBody">
+                            <tr><td colspan="3" class="text-center">Memuat data operasional...</td></tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- INVOICING TAB -->
-            <div class="tab-content" id="invoicing-tab">
-                <div class="panel">
-                    <div class="panel-title">Terbitkan Invoice B2B / Inter-Company</div>
-                    <div class="form-row">
-                        <div class="form-group"><label>Nama Customer</label><input type="text" id="invCustomer"></div>
-                        <div class="form-group"><label>Total Tagihan (Rp)</label><input type="number" id="invTotalAmount"></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group"><label>Tanggal Invoice</label><input type="date" id="invDate"></div>
-                        <div class="form-group"><label>Jatuh Tempo</label><input type="date" id="invDueDate"></div>
-                    </div>
-                    <div class="form-group"><label>Catatan</label><input type="text" id="invNotes"></div>
-                    <button class="btn-gold" onclick="submitInvoice()">Simpan Invoice</button>
-                </div>
-                <div class="panel">
-                    <div class="panel-title">Daftar Piutang Customer</div>
-                    <table>
-                        <thead><tr><th>ID</th><th>Customer</th><th>Jatuh Tempo</th><th class="text-right">Total</th><th class="text-right">Sisa</th><th class="text-center">Status</th><th class="text-center">Aksi</th></tr></thead>
-                        <tbody id="invoiceTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- POS TAB -->
+            <!-- POS IMPORT TAB -->
             <div class="tab-content" id="pos-tab">
                 <div class="panel">
-                    <div class="panel-title">Upload Rekapitulasi POS (ESB)</div>
-                    <div style="border: 2px dashed var(--gold); padding: 40px; text-align: center; border-radius: 12px; background: rgba(212, 175, 55, 0.02);">
-                        <p style="margin-bottom: 15px; color: var(--text-muted);">Pilih file Excel (XLSX) Sales Menu Recapitulation dari ESB</p>
+                    <div class="panel-title">Upload Rekapitulasi POS (ESB Excel)</div>
+                    <div style="border: 2px dashed var(--border-color); padding: 50px; text-align: center; border-radius: var(--radius-card); background: var(--bg-body);">
+                        <p style="margin-bottom: 20px; color: var(--text-gray); font-weight: 600;">Unggah File Rekapitulasi Penjualan (.XLSX) dari Mesin Kasir ESB</p>
                         <input type="file" id="posFileInput" accept=".xlsx, .xls, .csv" style="display: none;" onchange="handleFrontendFileParse(event)">
-                        <button class="btn-gold" onclick="document.getElementById('posFileInput').click()">📁 Pilih File ESB POS</button>
+                        <button class="btn-primary" onclick="document.getElementById('posFileInput').click()">📁 Pilih File ESB POS</button>
                     </div>
-                    <div id="posUploadSummary" style="display: none; margin-top: 20px;">
-                        <div class="pl-line"><span>Total Item Terbaca:</span><strong id="posParsedCount">0</strong></div>
-                        <div class="pl-line"><span>Omzet Bersih POS:</span><strong id="posParsedRevenue" class="num">Rp 0</strong></div>
-                        <button class="btn-gold" style="margin-top: 15px;" onclick="executePosSync()">⚡ Eksekusi Pemotongan Stok & Simpan Omzet</button>
+                    <div id="posUploadSummary" style="display: none; margin-top: 25px;">
+                        <div class="pl-row-item"><span>Total Item Terbaca:</span><strong id="posParsedCount">0 Item</strong></div>
+                        <div class="pl-row-item"><span>Omzet Bersih POS:</span><strong id="posParsedRevenue" style="color: var(--accent-blue);">Rp 0</strong></div>
+                        <button class="btn-primary" style="margin-top: 20px; width: 100%;" onclick="executePosSync()">⚡ Potong Stok BOM & Simpan Omzet</button>
                     </div>
                 </div>
             </div>
@@ -238,8 +598,12 @@
                 <div class="panel">
                     <div class="panel-title">Sisa Stok Bahan Baku (Ledger Real-Time)</div>
                     <table>
-                        <thead><tr><th>Nama Bahan</th><th>Satuan</th><th>Sisa Stok</th><th class="text-right">Valuasi Persediaan</th></tr></thead>
-                        <tbody id="inventoryTableBody"></tbody>
+                        <thead>
+                            <tr><th>Nama Bahan</th><th>Satuan</th><th>Sisa Stok</th><th class="text-right">Valuasi Persediaan</th></tr>
+                        </thead>
+                        <tbody id="inventoryTableBody">
+                            <tr><td colspan="4" class="text-center">Memuat data persediaan...</td></tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -247,13 +611,13 @@
             <!-- EXPENSES TAB -->
             <div class="tab-content" id="expenses-tab">
                 <div class="panel">
-                    <div class="panel-title">Input Pengeluaran / OPEX Baru</div>
+                    <div class="panel-title">Input OPEX / Pengeluaran Baru</div>
                     <div class="form-row">
-                        <div class="form-group"><label>Tanggal</label><input type="date" id="expenseDate"></div>
+                        <div class="form-group"><label>Tanggal Transaksi</label><input type="date" id="expDate"></div>
                         <div class="form-group">
-                            <label>Kategori</label>
+                            <label>Kategori Beban</label>
                             <select id="expCategory">
-                                <option value="Bahan Baku / COGS">Bahan Baku / COGS (Aset Stok)</option>
+                                <option value="Bahan Baku / COGS">Bahan Baku / COGS (Aset Gudang)</option>
                                 <option value="Supplies (Cup, Napkin, Sedotan)">Supplies</option>
                                 <option value="Gaji / Upah Staff">Gaji / Upah Staff</option>
                                 <option value="Sewa Lokasi / Rent">Sewa Lokasi / Rent</option>
@@ -269,17 +633,22 @@
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group"><label>Nominal (Rp)</label><input type="number" id="expAmount" placeholder="Contoh: 150000"></div>
+                        <div class="form-group"><label>Nominal Transaksi (Rp)</label><input type="number" id="expAmount" placeholder="Contoh: 150000"></div>
                         <div class="form-group"><label>Metode Pembayaran</label><select id="expPayment"><option>Cash</option><option>Transfer</option></select></div>
                     </div>
-                    <div class="form-group"><label>Keterangan</label><input type="text" id="expDescription" placeholder="Deskripsi pengeluaran"></div>
-                    <button class="btn-gold" onclick="addExpense()">Simpan Transaksi</button>
+                    <div class="form-group"><label>Keterangan Transaksi</label><input type="text" id="expDescription" placeholder="Uraian pengeluaran kas"></div>
+                    <button class="btn-primary" onclick="submitExpense()">Simpan Transaksi Kas</button>
                 </div>
+
                 <div class="panel">
-                    <div class="panel-title">Jurnal Log Pengeluaran</div>
+                    <div class="panel-title">Jurnal Kas Pengeluaran</div>
                     <table>
-                        <thead><tr><th>Tanggal</th><th>Kategori</th><th>Keterangan</th><th class="text-right">Nominal</th><th class="text-center">Aksi</th></tr></thead>
-                        <tbody id="expenseLogBody"></tbody>
+                        <thead>
+                            <tr><th>Tanggal</th><th>Kategori</th><th>Keterangan</th><th class="text-right">Nominal</th><th class="text-center">Aksi</th></tr>
+                        </thead>
+                        <tbody id="expenseLogBody">
+                            <tr><td colspan="5" class="text-center">Belum ada catatan transaksi</td></tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -287,30 +656,17 @@
             <!-- REPORT TAB -->
             <div class="tab-content" id="report-tab">
                 <div class="panel">
-                    <div class="panel-title text-center">LAPORAN LABA RUGI DUAL-TRACK</div>
-                    <p class="text-center" id="reportPeriod" style="color: var(--text-muted); margin-bottom: 20px; font-size: 13px;"></p>
+                    <div class="panel-title text-center" style="font-size: 22px;">LAPORAN LABA RUGI DUAL-TRACK</div>
+                    <p class="text-center" id="reportPeriod" style="color: var(--text-muted); margin-bottom: 25px; font-size: 13px; font-weight: 600;"></p>
                     
-                    <div class="pl-line bold"><span>1. TOTAL REVENUE</span><span id="report-totalRevenue" class="num">Rp 0</span></div>
-                    <div class="pl-line"><span>HPP Target Owner (Kunci 70%)</span><span id="report-cogsTarget" class="num">Rp 0</span></div>
-                    <div class="pl-line bold"><span>2. TARGET GROSS PROFIT (30%)</span><span id="report-grossProfit" class="num">Rp 0</span></div>
+                    <div class="pl-row-item bold-total"><span>1. TOTAL REVENUE</span><span id="report-totalRevenue">Rp 0</span></div>
+                    <div class="pl-row-item"><span>HPP Target Owner (Kunci 70%)</span><span id="report-cogsTarget">Rp 0</span></div>
+                    <div class="pl-row-item bold-total"><span>2. TARGET GROSS PROFIT (30%)</span><span id="report-grossProfit">Rp 0</span></div>
                     <div id="report-expenses"></div>
-                    <div class="pl-line"><span>Subtotal OPEX</span><span id="report-totalOpex" class="num">Rp 0</span></div>
-                    <div class="pl-line"><span>Beban Waste / Varians Bar</span><span id="report-variance" class="num" style="color: var(--warning);">Rp 0</span></div>
-                    <div class="pl-line hero-profit" id="report-netProfit"><span>3. NET OPERATING PROFIT</span><span class="num">Rp 0</span></div>
+                    <div class="pl-row-item"><span>Subtotal OPEX</span><span id="report-totalOpex">Rp 0</span></div>
+                    <div class="pl-row-item"><span>Beban Waste / Varians Bar</span><span id="report-variance" style="color: var(--danger);">Rp 0</span></div>
+                    <div class="pl-row-item hero-net-profit" id="report-netProfit"><span>3. NET OPERATING PROFIT</span><span>Rp 0</span></div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL PELUNASAN -->
-    <div class="overlay" id="paymentModal">
-        <div style="background: var(--dark-card); border: 1px solid var(--border-gold); padding: 24px; border-radius: 12px; width: 340px;">
-            <div class="panel-title" style="font-size: 16px;">Pelunasan Piutang</div>
-            <input type="hidden" id="payModalInvoiceId">
-            <div class="form-group"><label>Nominal Pembayaran (Rp)</label><input type="number" id="payModalAmount"></div>
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button class="btn-gold" style="flex: 1;" onclick="submitPayment()">Simpan</button>
-                <button class="btn-outline" onclick="closePaymentModal()">Batal</button>
             </div>
         </div>
     </div>
@@ -318,7 +674,7 @@
     <div class="overlay" id="loading"><div class="spinner"></div></div>
 
     <script>
-        // MASUKKAN URL WEB APP DEPLOYMENT GOOGLE APPS SCRIPT ANDA DI SINI
+        // PASTA KAN URL DEPLOYMENT GOOGLE APPS SCRIPT WEB APP DI SINI
         const API_URL = 'https://script.google.com/macros/s/AKfycbw7B97NMsyyfwiXqxIqjvwKGnbMEXigHp06i2-0MSirsj5Mc4YnlK_OO7B0VnhiHtAJ/exec';
 
         let posPayload = [];
@@ -326,18 +682,52 @@
 
         function formatCurrency(val) { return 'Rp ' + Math.round(val || 0).toLocaleString('id-ID'); }
         function showLoading(active) { document.getElementById('loading').className = active ? 'overlay show' : 'overlay'; }
+        
         function notify(msg, type = 'success') {
             const el = document.getElementById(type + 'Alert');
             el.textContent = msg; el.className = 'toast toast-' + type + ' show';
             setTimeout(() => { el.className = 'toast toast-' + type; }, 4000);
         }
-        function switchTab(name, event) {
-            event.preventDefault();
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(name + '-tab').classList.add('active');
-            event.target.classList.add('active');
-            if (name === 'report') refreshReport();
+
+        // SISTEM ROUTING TAB TERISOLASI (BEBAS BUG TERTUMPUK)
+        function switchTab(tabName, event) {
+            if (event) event.preventDefault();
+            
+            // 1. Sembunyikan semua tab
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(el => {
+                el.classList.remove('active');
+                el.style.display = 'none';
+            });
+
+            // 2. Clear status aktif navigasi sidebar
+            const buttons = document.querySelectorAll('.nav-link');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            // 3. Tampilkan tab target
+            const targetPanel = document.getElementById(tabName + '-tab');
+            if (targetPanel) {
+                targetPanel.classList.add('active');
+                targetPanel.style.display = 'block';
+            }
+
+            // 4. Set tombol aktif
+            const triggerBtn = event ? event.currentTarget : document.querySelector(`[onclick*="switchTab('${tabName}'"]`);
+            if (triggerBtn) triggerBtn.classList.add('active');
+
+            // 5. Update nama header halaman
+            const titles = {
+                dashboard: 'Financial Dashboard',
+                pos: 'ESB POS Import',
+                inventory: 'Inventory & BOM Control',
+                expenses: 'Expenses / OPEX Journal',
+                report: 'Dual-Track P&L Report'
+            };
+            document.getElementById('pageTitle').textContent = titles[tabName] || 'Financial Dashboard';
+
+            // 6. Trigger data fetcher
+            if (tabName === 'report') refreshReport();
+            else if (tabName === 'inventory') loadInventory();
         }
 
         async function apiGet(action, params = {}) {
@@ -384,13 +774,8 @@
             document.getElementById('cogsTarget').textContent = formatCurrency(data.cogs_target);
             document.getElementById('cogsAktual').textContent = formatCurrency(data.cogs_aktual);
             document.getElementById('cogsVariance').textContent = formatCurrency(data.operational_variance);
-            document.getElementById('outstandingAR').textContent = formatCurrency(data.outstanding_ar);
             document.getElementById('netProfit').textContent = formatCurrency(data.profit);
-            
             document.getElementById('marginPct').textContent = (data.margin * 100).toFixed(1) + '%';
-            
-            const profitCard = document.getElementById('profitCard');
-            data.profit < 0 ? profitCard.style.borderColor = 'var(--danger)' : profitCard.style.borderColor = 'var(--border-gold)';
 
             renderExpenseBreakdown(data.expensesByCategory);
             renderExpenseList(data.expenses_list);
@@ -406,66 +791,21 @@
                 if (cat === 'Bahan Baku / COGS') continue;
                 if (breakdown[cat] === 0) continue;
                 const pct = totalOpex > 0 ? ((breakdown[cat] / totalOpex) * 100).toFixed(1) : 0;
-                tbody.innerHTML += `<tr><td>${cat}</td><td class="text-right num">${formatCurrency(breakdown[cat])}</td><td class="text-right">${pct}%</td></tr>`;
+                tbody.innerHTML += `<tr><td>${cat}</td><td class="text-right">${formatCurrency(breakdown[cat])}</td><td class="text-right">${pct}%</td></tr>`;
             }
         }
 
         function renderExpenseList(list) {
             const tbody = document.getElementById('expenseLogBody');
             tbody.innerHTML = '';
-            if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="text-center">Belum ada pengeluaran</td></tr>'; return; }
+            if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="text-center">Belum ada transaksi</td></tr>'; return; }
             list.forEach(item => {
                 tbody.innerHTML += `<tr>
                     <td>${item.date}</td><td>${item.category}</td><td>${item.description}</td>
-                    <td class="text-right num">${formatCurrency(item.amount)}</td>
-                    <td class="text-center"><button class="btn-danger" onclick="deleteExpenseRow(${item.rowIndex})" style="padding: 6px 10px; font-size: 10px;">Hapus</button></td>
+                    <td class="text-right">${formatCurrency(item.amount)}</td>
+                    <td class="text-center"><button class="btn-danger" onclick="deleteExpenseRow(${item.rowIndex})">Hapus</button></td>
                 </tr>`;
             });
-        }
-
-        async function loadInvoices() {
-            const invoices = await apiGet('getInvoices');
-            const tbody = document.getElementById('invoiceTableBody');
-            tbody.innerHTML = '';
-            invoices.forEach(inv => {
-                let badgeClass = inv.status === 'LUNAS' ? 'badge-lunas' : (inv.status === 'PARSIAL' ? 'badge-parsial' : 'badge-unpaid');
-                const actionBtn = inv.status !== 'LUNAS' ? `<button class="btn-gold" onclick="openPaymentModal('${inv.id}', ${inv.remainingAmount})" style="padding: 6px 12px; font-size: 10px;">Bayar</button>` : 'Selesai';
-                tbody.innerHTML += `<tr>
-                    <td><strong>${inv.id}</strong></td><td>${inv.customer}</td><td>${inv.dueDate}</td>
-                    <td class="text-right num">${formatCurrency(inv.totalAmount)}</td>
-                    <td class="text-right num">${formatCurrency(inv.remainingAmount)}</td>
-                    <td class="text-center"><span class="badge ${badgeClass}">${inv.status}</span></td>
-                    <td class="text-center">${actionBtn}</td>
-                </tr>`;
-            });
-        }
-
-        async function submitInvoice() {
-            const customer = document.getElementById('invCustomer').value;
-            const totalAmount = document.getElementById('invTotalAmount').value;
-            const date = document.getElementById('invDate').value;
-            const dueDate = document.getElementById('invDueDate').value;
-            const notes = document.getElementById('invNotes').value;
-            if(!customer || !totalAmount || !date) { notify('Lengkapi nama, total, dan tanggal!', 'error'); return; }
-
-            await apiPost('createInvoice', { customer, date, dueDate, totalAmount, notes });
-            notify('Invoice berhasil diterbitkan!');
-            loadInvoices(); loadData();
-        }
-
-        function openPaymentModal(invId, remaining) {
-            document.getElementById('payModalInvoiceId').value = invId;
-            document.getElementById('payModalAmount').value = remaining;
-            document.getElementById('paymentModal').className = 'overlay show';
-        }
-        function closePaymentModal() { document.getElementById('paymentModal').className = 'overlay'; }
-
-        async function submitPayment() {
-            const invoiceId = document.getElementById('payModalInvoiceId').value;
-            const paymentAmount = document.getElementById('payModalAmount').value;
-            await apiPost('recordPayment', { invoiceId, paymentAmount });
-            notify('Pembayaran dicatat!');
-            closePaymentModal(); loadInvoices(); loadData();
         }
 
         function handleFrontendFileParse(e) {
@@ -490,7 +830,7 @@
                     const total = parseFloat(String(row[totalCol]).replace(/[^0-9.-]/g, '')) || 0;
                     if (qty > 0) { posPayload.push({ name: String(row[menuCol]).trim(), qty }); parsedRevenueGross += total; }
                 }
-                document.getElementById('posParsedCount').textContent = posPayload.length;
+                document.getElementById('posParsedCount').textContent = posPayload.length + ' Item';
                 document.getElementById('posParsedRevenue').textContent = formatCurrency(parsedRevenueGross);
                 document.getElementById('posUploadSummary').style.display = 'block';
             };
@@ -511,7 +851,7 @@
             const tbody = document.getElementById('inventoryTableBody');
             tbody.innerHTML = '';
             items.forEach(it => {
-                tbody.innerHTML += `<tr><td>${it.nama}</td><td>${it.satuan}</td><td>${it.qty.toFixed(2)}</td><td class="text-right num">${formatCurrency(it.nilai)}</td></tr>`;
+                tbody.innerHTML += `<tr><td>${it.nama}</td><td>${it.satuan}</td><td>${it.qty.toFixed(2)}</td><td class="text-right">${formatCurrency(it.nilai)}</td></tr>`;
             });
         }
 
@@ -537,29 +877,38 @@
             const y = document.getElementById('yearSelect').value;
             const data = await apiGet('getData', { bulan: m, tahun: y });
             const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-            document.getElementById('reportPeriod').textContent = 'Periode Laporan: ' + months[m-1] + ' ' + y;
+            document.getElementById('reportPeriod').textContent = 'Periode: ' + months[m-1] + ' ' + y;
             
             document.getElementById('report-totalRevenue').textContent = formatCurrency(data.revenue);
             document.getElementById('report-cogsTarget').textContent = formatCurrency(data.cogs_target);
-            document.getElementById('report-grossProfit').textContent = formatCurrency(data.gross_profit);
+            document.getElementById('report-grossProfit').textContent = formatCurrency(data.revenue - data.cogs_target);
             
             let opexHtml = '';
             for (let [cat, amt] of Object.entries(data.expensesByCategory)) {
                 if (cat !== 'Bahan Baku / COGS' && amt > 0) {
-                    opexHtml += `<div class="pl-line"><span>${cat}</span><span class="num">${formatCurrency(amt)}</span></div>`;
+                    opexHtml += `<div class="pl-row-item"><span>${cat}</span><span>${formatCurrency(amt)}</span></div>`;
                 }
             }
             document.getElementById('report-expenses').innerHTML = opexHtml;
             document.getElementById('report-totalOpex').textContent = formatCurrency(data.operating_expenses);
             document.getElementById('report-variance').textContent = formatCurrency(data.operational_variance);
-            document.getElementById('report-netProfit').innerHTML = `<span>NET OPERATING PROFIT</span><span class="num">${formatCurrency(data.profit)}</span>`;
+            document.getElementById('report-netProfit').innerHTML = `<span>NET OPERATING PROFIT</span><span>${formatCurrency(data.profit)}</span>`;
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+                el.style.display = 'none';
+            });
+            
+            const defaultTab = document.getElementById('dashboard-tab');
+            if (defaultTab) {
+                defaultTab.classList.add('active');
+                defaultTab.style.display = 'block';
+            }
+
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('expDate').value = today;
-            document.getElementById('invDate').value = today;
-            document.getElementById('invDueDate').value = today;
             loadData();
         });
     </script>
