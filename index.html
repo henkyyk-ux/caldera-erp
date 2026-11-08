@@ -317,15 +317,16 @@
         }
 
         function showLoading(show = true) {
-            if (show) {
-                document.getElementById('loading').classList.add('show');
-            } else {
-                document.getElementById('loading').classList.remove('show');
+            const loader = document.getElementById('loading');
+            if (loader) {
+                if (show) loader.classList.add('show');
+                else loader.classList.remove('show');
             }
         }
 
         function showAlert(message, type = 'success') {
             const alertEl = document.getElementById(type + 'Alert');
+            if (!alertEl) return;
             alertEl.textContent = message;
             alertEl.classList.add('show');
             setTimeout(() => alertEl.classList.remove('show'), 4000);
@@ -359,16 +360,20 @@
                 document.getElementById('inv-aktual-hpp').textContent = formatCurrency(data.cogs_aktual);
                 
                 const aktualCard = document.getElementById('aktualHppCard');
-                if(data.cogs_aktual > data.cogs_target) {
-                    aktualCard.style.borderLeftColor = 'var(--danger)';
-                    aktualCard.style.color = 'var(--danger)';
-                } else {
-                    aktualCard.style.borderLeftColor = 'var(--gold)';
-                    aktualCard.style.color = '';
+                if (aktualCard) {
+                    if (data.cogs_aktual > data.cogs_target) {
+                        aktualCard.style.borderLeftColor = 'var(--danger)';
+                        aktualCard.style.color = 'var(--danger)';
+                    } else {
+                        aktualCard.style.borderLeftColor = 'var(--gold)';
+                        aktualCard.style.color = '';
+                    }
                 }
                 
                 const profitCard = document.getElementById('profitCard');
-                data.profit < 0 ? profitCard.classList.add('loss') : profitCard.classList.remove('loss');
+                if (profitCard) {
+                    data.profit < 0 ? profitCard.classList.add('loss') : profitCard.classList.remove('loss');
+                }
                 
                 loadExpenseBreakdown(data.expensesByCategory);
                 loadExpenseTable(data.expenses_list);
@@ -381,11 +386,12 @@
 
         function loadExpenseBreakdown(expenses) {
             const tbody = document.getElementById('expenseBreakdownBody');
+            if (!tbody) return;
             tbody.innerHTML = '';
             let total = 0;
             for (let amount of Object.values(expenses)) total += amount;
             for (let [category, amount] of Object.entries(expenses)) {
-                if (category === 'Bahan Baku / COGS') continue; // Sesuai prinsip arus kas stok
+                if (category === 'Bahan Baku / COGS') continue;
                 const pct = total > 0 ? ((amount / total) * 100).toFixed(1) : 0;
                 tbody.innerHTML += `<tr><td>${category}</td><td class="text-right amount">${formatCurrency(amount)}</td><td class="text-right">${pct}%</td></tr>`;
             }
@@ -393,6 +399,7 @@
 
         function loadExpenseTable(expenses) {
             const tbody = document.getElementById('expenseTableBody');
+            if (!tbody) return;
             tbody.innerHTML = '';
             if (!expenses || expenses.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No expenses yet</td></tr>';
@@ -407,6 +414,33 @@
                     <td class="text-center"><button class="btn-danger" onclick="deleteExpense(${expense.rowIndex})" style="padding: 4px 8px; font-size: 12px;">Delete</button></td>
                 </tr>`;
             });
+        }
+
+        function addExpense() {
+            const date = document.getElementById('expenseDate').value;
+            const category = document.getElementById('expenseCategory').value;
+            const description = document.getElementById('expenseDescription').value;
+            const amount = parseFloat(document.getElementById('expenseAmount').value) || 0;
+            const payment = document.getElementById('expensePayment').value;
+            const notes = document.getElementById('expenseNotes').value;
+
+            if (!date || !category || !description || amount <= 0) {
+                showAlert('Please fill all required fields', 'error');
+                return;
+            }
+
+            google.script.run.withSuccessHandler(function() {
+                showAlert('✨ Expense added successfully!');
+                document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+                document.getElementById('expenseCategory').value = '';
+                document.getElementById('expenseDescription').value = '';
+                document.getElementById('expenseAmount').value = '';
+                document.getElementById('expensePayment').value = 'Cash';
+                document.getElementById('expenseNotes').value = '';
+                loadData();
+            }).withFailureHandler(function(err) {
+                showAlert('Error: ' + err, 'error');
+            }).addExpense(date, category, description, amount, payment, notes);
         }
 
         function deleteExpense(rowIndex) {
@@ -424,22 +458,24 @@
 
         function refreshReport() {
             showLoading(true);
+            const month = parseInt(document.getElementById('monthSelect').value);
+            const year = parseInt(document.getElementById('yearSelect').value);
+
             google.script.run.withSuccessHandler(function(data) {
-                const month = parseInt(document.getElementById('monthSelect').value);
-                const year = parseInt(document.getElementById('yearSelect').value);
                 const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
                 document.getElementById('reportPeriod').textContent = 'Periode: ' + months[month-1] + ' ' + year;
                 document.getElementById('report-totalPenjualan').textContent = formatCurrency(data.revenue);
                 document.getElementById('report-otherIncome').textContent = formatCurrency(0);
                 document.getElementById('report-totalRevenue').textContent = formatCurrency(data.revenue);
-                document.getElementById('report-totalExpenses').textContent = formatCurrency(data.expenses);
+                document.getElementById('report-totalExpenses').textContent = formatCurrency(data.total_expenses);
                 
                 const profitRow = document.getElementById('report-netProfit');
-                profitRow.querySelector('span:first-child').textContent = data.profit >= 0 ? 'NET PROFIT' : 'NET LOSS';
-                profitRow.querySelector('span:last-child').textContent = formatCurrency(Math.abs(data.profit));
-                
-                data.profit < 0 ? profitRow.classList.add('loss') : profitRow.classList.remove('loss');
+                if (profitRow) {
+                    profitRow.querySelector('span:first-child').textContent = data.profit >= 0 ? 'NET PROFIT' : 'NET LOSS';
+                    profitRow.querySelector('span:last-child').textContent = formatCurrency(Math.abs(data.profit));
+                    data.profit < 0 ? profitRow.classList.add('loss') : profitRow.classList.remove('loss');
+                }
                 document.getElementById('report-margin').textContent = (data.margin * 100).toFixed(1) + '%';
 
                 let expensesHtml = `<div class="pl-row"><span>HPP Target Owner (70%)</span><span class="amount">${formatCurrency(data.cogs_target)}</span></div>`;
@@ -456,10 +492,7 @@
             }).withFailureHandler(function(err) {
                 showAlert('Error: ' + err, 'error');
                 showLoading(false);
-            }).getReportData(
-                parseInt(document.getElementById('monthSelect').value),
-                parseInt(document.getElementById('yearSelect').value)
-            );
+            }).getReportData(month, year);
         }
 
         function printReport() { window.print(); }
@@ -539,6 +572,7 @@
         function loadInventory() {
             google.script.run.withSuccessHandler(function(data) {
                 const tbody = document.getElementById('inventoryTableBody');
+                if (!tbody) return;
                 tbody.innerHTML = '';
                 if (!data || data.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Data inventaris kosong</td></tr>';
