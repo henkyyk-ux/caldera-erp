@@ -4,489 +4,133 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DealDeck - Cosmology Coffee / Caldera ERP</title>
-    <!-- Font Plus Jakarta Sans & Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         :root {
-            /* Palet Warna DealDeck UI */
-            --bg-body: #F4F7FE;
-            --bg-card: #FFFFFF;
-            --bg-sidebar: #FFFFFF;
-            --accent-blue: #4318FF;
-            --accent-blue-hover: #3311CC;
-            --accent-blue-light: #F4F7FF;
-            --text-dark: #2B3674;
-            --text-muted: #A3AED0;
-            --text-gray: #707EAE;
+            --bg-body: #F4F7FE; --bg-card: #FFFFFF; --bg-sidebar: #FFFFFF;
+            --accent-blue: #4318FF; --accent-blue-hover: #3311CC; --accent-blue-light: #F4F7FF;
+            --text-dark: #2B3674; --text-muted: #A3AED0; --text-gray: #707EAE;
             --border-color: #E9EDF7;
-            
-            --success: #05CD99;
-            --success-light: #E6F9F5;
-            --danger: #EE5D50;
-            --danger-light: #FDEEEE;
-            --warning: #FFB547;
-            --warning-light: #FFF8EC;
-
-            --radius-card: 20px;
-            --radius-btn: 12px;
+            --success: #05CD99; --success-light: #E6F9F5;
+            --danger: #EE5D50; --danger-light: #FDEEEE;
+            --warning: #FFB547; --warning-light: #FFF8EC;
+            --radius-card: 20px; --radius-btn: 12px;
             --shadow-soft: 0px 18px 40px rgba(112, 144, 176, 0.12);
         }
-
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-dark);
-            display: flex;
-            min-height: 100vh;
-            overflow-x: hidden;
+            background-color: var(--bg-body); color: var(--text-dark);
+            display: flex; min-height: 100vh; overflow-x: hidden;
         }
-
-        /* --- SIDEBAR NAVIGATION --- */
         aside {
-            width: 280px;
-            background: var(--bg-sidebar);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            height: 100vh;
-            z-index: 100;
-            padding: 30px 20px;
+            width: 280px; background: var(--bg-sidebar); border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100; padding: 30px 20px;
         }
-
         .brand-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding-bottom: 30px;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 20px;
+            display: flex; align-items: center; gap: 12px; padding-bottom: 30px;
+            border-bottom: 1px solid var(--border-color); margin-bottom: 20px;
         }
-
         .brand-icon {
-            width: 42px;
-            height: 42px;
-            background: var(--accent-blue);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #FFFFFF;
-            font-size: 20px;
-            font-weight: 800;
+            width: 42px; height: 42px; background: var(--accent-blue); border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 20px; font-weight: 800;
         }
-
-        .brand-title {
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--text-dark);
-            letter-spacing: -0.5px;
-        }
-
-        .menu-category {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 15px 0 10px 12px;
-        }
-
-        .sidebar-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            flex: 1;
-        }
-
+        .brand-title { font-size: 20px; font-weight: 800; color: var(--text-dark); letter-spacing: -0.5px; }
+        .menu-category { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin: 15px 0 10px 12px; }
+        .sidebar-menu { display: flex; flex-direction: column; gap: 6px; flex: 1; }
         .nav-link {
-            width: 100%;
-            text-align: left;
-            padding: 14px 18px;
-            background: transparent;
-            border: none;
-            color: var(--text-gray);
-            font-size: 14px;
-            font-weight: 600;
-            border-radius: var(--radius-btn);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            transition: all 0.25s ease;
+            width: 100%; text-align: left; padding: 14px 18px; background: transparent; border: none;
+            color: var(--text-gray); font-size: 14px; font-weight: 600; border-radius: var(--radius-btn);
+            cursor: pointer; display: flex; align-items: center; gap: 14px; transition: all 0.25s ease;
         }
-
-        .nav-link:hover {
-            background: var(--accent-blue-light);
-            color: var(--accent-blue);
-        }
-
-        .nav-link.active {
-            background: var(--accent-blue);
-            color: #FFFFFF;
-            box-shadow: 0px 10px 20px rgba(67, 24, 255, 0.2);
-        }
-
-        /* --- MAIN CONTENT AREA --- */
-        .main-wrapper {
-            flex: 1;
-            margin-left: 280px;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        header {
-            padding: 25px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: transparent;
-        }
-
-        .header-title h1 {
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--text-dark);
-        }
-
-        .header-title p {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-
+        .nav-link:hover { background: var(--accent-blue-light); color: var(--accent-blue); }
+        .nav-link.active { background: var(--accent-blue); color: #FFFFFF; box-shadow: 0px 10px 20px rgba(67, 24, 255, 0.2); }
+        
+        .main-wrapper { flex: 1; margin-left: 280px; display: flex; flex-direction: column; min-height: 100vh; }
+        header { padding: 25px 40px; display: flex; justify-content: space-between; align-items: center; background: transparent; }
+        .header-title h1 { font-size: 24px; font-weight: 800; color: var(--text-dark); }
+        .header-title p { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
         .period-selector-box {
-            display: flex;
-            gap: 10px;
-            background: var(--bg-card);
-            padding: 8px 16px;
-            border-radius: 30px;
-            box-shadow: var(--shadow-soft);
-            border: 1px solid var(--border-color);
+            display: flex; gap: 10px; background: var(--bg-card); padding: 8px 16px;
+            border-radius: 30px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color);
         }
+        .period-selector-box select { background: transparent; color: var(--text-dark); border: none; font-size: 13px; font-weight: 700; cursor: pointer; outline: none; }
+        .content-container { padding: 0 40px 40px 40px; width: 100%; }
 
-        .period-selector-box select {
-            background: transparent;
-            color: var(--text-dark);
-            border: none;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            outline: none;
-        }
-
-        .content-container {
-            padding: 0 40px 40px 40px;
-            width: 100%;
-        }
-
-        /* --- METRICS GRID CARDS --- */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .card-stat {
-            background: var(--bg-card);
-            border-radius: var(--radius-card);
-            padding: 22px 24px;
-            box-shadow: var(--shadow-soft);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            position: relative;
-            transition: transform 0.2s ease;
+            background: var(--bg-card); border-radius: var(--radius-card); padding: 22px 24px;
+            box-shadow: var(--shadow-soft); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease;
         }
-
-        .card-stat:hover {
-            transform: translateY(-3px);
-        }
-
-        .card-stat.highlight-blue {
-            background: linear-gradient(135deg, #868CFF 0%, #4318FF 100%);
-            color: #FFFFFF;
-        }
-
-        .card-stat.highlight-blue .stat-label,
-        .card-stat.highlight-blue .stat-sub {
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .card-stat.highlight-blue .stat-value {
-            color: #FFFFFF;
-        }
-
-        .stat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .stat-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background: var(--bg-body);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-
-        .badge-trend {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-        }
-
+        .card-stat:hover { transform: translateY(-3px); }
+        .card-stat.highlight-blue { background: linear-gradient(135deg, #868CFF 0%, #4318FF 100%); color: #FFFFFF; }
+        .card-stat.highlight-blue .stat-label, .card-stat.highlight-blue .stat-sub { color: rgba(255, 255, 255, 0.8); }
+        .card-stat.highlight-blue .stat-value { color: #FFFFFF; }
+        .stat-header { display: flex; justify-content: space-between; align-items: center; }
+        .badge-trend { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
         .badge-trend.up { background: var(--success-light); color: var(--success); }
         .badge-trend.down { background: var(--danger-light); color: var(--danger); }
         .badge-trend.warn { background: var(--warning-light); color: var(--warning); }
+        .stat-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-top: 15px; }
+        .stat-value { font-size: 24px; font-weight: 800; color: var(--text-dark); margin: 6px 0; letter-spacing: -0.5px; }
+        .stat-sub { font-size: 12px; color: var(--text-gray); font-weight: 500; }
 
-        .stat-label {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            margin-top: 15px;
-        }
-
-        .stat-value {
-            font-size: 26px;
-            font-weight: 800;
-            color: var(--text-dark);
-            margin: 6px 0;
-            letter-spacing: -0.5px;
-        }
-
-        .stat-sub {
-            font-size: 12px;
-            color: var(--text-gray);
-            font-weight: 500;
-        }
-
-        /* --- PANELS & TABLES --- */
-        .panel {
-            background: var(--bg-card);
-            border-radius: var(--radius-card);
-            padding: 28px;
-            box-shadow: var(--shadow-soft);
-            margin-bottom: 24px;
-        }
-
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .panel-title {
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--text-dark);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-
+        .panel { background: var(--bg-card); border-radius: var(--radius-card); padding: 28px; box-shadow: var(--shadow-soft); margin-bottom: 24px; }
+        .panel-title { font-size: 18px; font-weight: 800; color: var(--text-dark); margin-bottom: 20px; }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 16px; }
         .form-group { margin-bottom: 16px; }
-
-        label {
-            display: block;
-            font-size: 12px;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-            font-weight: 700;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 12px 16px;
-            background: var(--bg-body);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            color: var(--text-dark);
-            font-size: 13px;
-            font-weight: 600;
-            outline: none;
-            transition: all 0.2s ease;
-        }
-
-        input:focus, select:focus {
-            border-color: var(--accent-blue);
-            background: #FFFFFF;
-        }
-
+        label { display: block; font-size: 12px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; font-weight: 700; }
+        input, select { width: 100%; padding: 12px 16px; background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-dark); font-size: 13px; font-weight: 600; outline: none; }
+        input:focus, select:focus { border-color: var(--accent-blue); background: #FFFFFF; }
+        
         button.btn-primary {
-            padding: 12px 24px;
-            border-radius: var(--radius-btn);
-            font-weight: 700;
-            font-size: 13px;
-            background: var(--accent-blue);
-            color: #FFFFFF;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0px 10px 20px rgba(67, 24, 255, 0.25);
-            transition: all 0.2s ease;
+            padding: 12px 24px; border-radius: var(--radius-btn); font-weight: 700; font-size: 13px;
+            background: var(--accent-blue); color: #FFFFFF; border: none; cursor: pointer;
+            box-shadow: 0px 10px 20px rgba(67, 24, 255, 0.25); transition: all 0.2s ease;
         }
+        button.btn-primary:hover { background: var(--accent-blue-hover); transform: translateY(-2px); }
+        button.btn-danger { padding: 8px 14px; border-radius: 8px; font-size: 11px; font-weight: 700; background: var(--danger-light); color: var(--danger); border: none; cursor: pointer; }
 
-        button.btn-primary:hover {
-            background: var(--accent-blue-hover);
-            transform: translateY(-2px);
-        }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        td { padding: 16px; border-bottom: 1px solid var(--border-color); font-size: 13px; font-weight: 600; color: var(--text-dark); }
+        .text-right { text-align: right; } .text-center { text-align: center; }
 
-        button.btn-danger {
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 700;
-            background: var(--danger-light);
-            color: var(--danger);
-            border: none;
-            cursor: pointer;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        th {
-            color: var(--text-muted);
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 700;
-            padding: 14px 16px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        td {
-            padding: 16px;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        tr:last-child td { border-bottom: none; }
-
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
-
-        .pl-row-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 14px 0;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .pl-row-item.bold-total {
-            font-size: 16px;
-            font-weight: 800;
-            color: var(--accent-blue);
-            background: var(--accent-blue-light);
-            padding: 16px 20px;
-            border-radius: 12px;
-            margin: 12px 0;
-            border: none;
-        }
-
-        .pl-row-item.hero-net-profit {
-            background: linear-gradient(135deg, #05CD99 0%, #04B486 100%);
-            color: #FFFFFF;
-            padding: 20px;
-            border-radius: 14px;
-            font-size: 18px;
-            font-weight: 800;
-            margin-top: 16px;
-        }
+        .pl-row-item { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border-color); font-size: 14px; font-weight: 600; }
+        .pl-row-item.bold-total { font-size: 16px; font-weight: 800; color: var(--accent-blue); background: var(--accent-blue-light); padding: 16px 20px; border-radius: 12px; margin: 12px 0; border: none; }
+        .pl-row-item.hero-net-profit { background: linear-gradient(135deg, #05CD99 0%, #04B486 100%); color: #FFFFFF; padding: 20px; border-radius: 14px; font-size: 18px; font-weight: 800; margin-top: 16px; }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Toast Alert & Loading Spinner */
-        .toast {
-            padding: 16px 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            font-size: 13px;
-            font-weight: 700;
-            display: none;
-        }
+        .toast { padding: 16px 20px; border-radius: 12px; margin-bottom: 20px; font-size: 13px; font-weight: 700; display: none; }
         .toast.show { display: block; }
         .toast-success { background: var(--success-light); color: var(--success); }
         .toast-error { background: var(--danger-light); color: var(--danger); }
 
-        .overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(255, 255, 255, 0.7);
-            z-index: 999;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(4px);
-        }
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(255, 255, 255, 0.7); z-index: 999; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
         .overlay.show { display: flex; }
-        .spinner {
-            border: 4px solid var(--border-color);
-            border-top: 4px solid var(--accent-blue);
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            animation: spin 0.8s linear infinite;
-        }
+        .spinner { border: 4px solid var(--border-color); border-top: 4px solid var(--accent-blue); border-radius: 50%; width: 45px; height: 45px; animation: spin 0.8s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
-
-    <!-- SIDEBAR NAVIGATION -->
     <aside>
         <div class="brand-header">
             <div class="brand-icon">C</div>
             <div class="brand-title">DealDeck</div>
         </div>
-
         <div class="menu-category">MENU</div>
         <div class="sidebar-menu">
-            <button class="nav-link active" onclick="switchTab('dashboard', event)">
-                <span>📊</span> Dashboard
-            </button>
-            <button class="nav-link" onclick="switchTab('pos', event)">
-                <span>📥</span> POS Import
-            </button>
-            <button class="nav-link" onclick="switchTab('inventory', event)">
-                <span>📦</span> Inventory & BOM
-            </button>
-            <button class="nav-link" onclick="switchTab('expenses', event)">
-                <span>📝</span> Expenses / OPEX
-            </button>
-            <button class="nav-link" onclick="switchTab('report', event)">
-                <span>📄</span> P&L Report
-            </button>
+            <button class="nav-link active" onclick="switchTab('dashboard', event)"><span>📊</span> Dashboard</button>
+            <button class="nav-link" onclick="switchTab('pos', event)"><span>📥</span> POS Import</button>
+            <button class="nav-link" onclick="switchTab('inventory', event)"><span>📦</span> Inventory & BOM</button>
+            <button class="nav-link" onclick="switchTab('expenses', event)"><span>📝</span> Expenses / OPEX</button>
+            <button class="nav-link" onclick="switchTab('report', event)"><span>📄</span> P&L Report</button>
         </div>
     </aside>
 
-    <!-- MAIN WRAPPER -->
     <div class="main-wrapper">
         <header>
             <div class="header-title">
@@ -511,7 +155,6 @@
             <div class="toast toast-success" id="successAlert"></div>
             <div class="toast toast-error" id="errorAlert"></div>
 
-            <!-- TOP METRICS GRID CARDS -->
             <div class="metrics-grid">
                 <div class="card-stat highlight-blue">
                     <div class="stat-header">
@@ -543,7 +186,7 @@
                 <div class="card-stat">
                     <div class="stat-header">
                         <span class="stat-label">Beban Waste Bar</span>
-                        <span class="badge-trend down" id="badgeWasteTrend">Varians</span>
+                        <span class="badge-trend down">Varians</span>
                     </div>
                     <div class="stat-value" id="cogsVariance" style="color: var(--danger);">Rp 0</div>
                     <div class="stat-sub">Inefisiensi Operasional</div>
@@ -559,12 +202,9 @@
                 </div>
             </div>
 
-            <!-- DASHBOARD TAB -->
             <div class="tab-content active" id="dashboard-tab">
                 <div class="panel">
-                    <div class="panel-header">
-                        <div class="panel-title">Struktur Beban Operasional (OPEX)</div>
-                    </div>
+                    <div class="panel-title">Struktur Beban Operasional (OPEX)</div>
                     <table>
                         <thead>
                             <tr><th>Kategori Beban</th><th class="text-right">Nominal</th><th class="text-right">% Proporsi</th></tr>
@@ -576,7 +216,6 @@
                 </div>
             </div>
 
-            <!-- POS IMPORT TAB -->
             <div class="tab-content" id="pos-tab">
                 <div class="panel">
                     <div class="panel-title">Upload Rekapitulasi POS (ESB Excel)</div>
@@ -593,7 +232,6 @@
                 </div>
             </div>
 
-            <!-- INVENTORY TAB -->
             <div class="tab-content" id="inventory-tab">
                 <div class="panel">
                     <div class="panel-title">Sisa Stok Bahan Baku (Ledger Real-Time)</div>
@@ -608,7 +246,6 @@
                 </div>
             </div>
 
-            <!-- EXPENSES TAB -->
             <div class="tab-content" id="expenses-tab">
                 <div class="panel">
                     <div class="panel-title">Input OPEX / Pengeluaran Baru</div>
@@ -653,7 +290,6 @@
                 </div>
             </div>
 
-            <!-- REPORT TAB -->
             <div class="tab-content" id="report-tab">
                 <div class="panel">
                     <div class="panel-title text-center" style="font-size: 22px;">LAPORAN LABA RUGI DUAL-TRACK</div>
@@ -674,7 +310,6 @@
     <div class="overlay" id="loading"><div class="spinner"></div></div>
 
     <script>
-        // PASTA KAN URL DEPLOYMENT GOOGLE APPS SCRIPT WEB APP DI SINI
         const API_URL = 'https://script.google.com/macros/s/AKfycbw7B97NMsyyfwiXqxIqjvwKGnbMEXigHp06i2-0MSirsj5Mc4YnlK_OO7B0VnhiHtAJ/exec';
 
         let posPayload = [];
@@ -689,33 +324,27 @@
             setTimeout(() => { el.className = 'toast toast-' + type; }, 4000);
         }
 
-        // SISTEM ROUTING TAB TERISOLASI (BEBAS BUG TERTUMPUK)
         function switchTab(tabName, event) {
             if (event) event.preventDefault();
             
-            // 1. Sembunyikan semua tab
             const contents = document.querySelectorAll('.tab-content');
             contents.forEach(el => {
                 el.classList.remove('active');
                 el.style.display = 'none';
             });
 
-            // 2. Clear status aktif navigasi sidebar
             const buttons = document.querySelectorAll('.nav-link');
             buttons.forEach(btn => btn.classList.remove('active'));
 
-            // 3. Tampilkan tab target
             const targetPanel = document.getElementById(tabName + '-tab');
             if (targetPanel) {
                 targetPanel.classList.add('active');
                 targetPanel.style.display = 'block';
             }
 
-            // 4. Set tombol aktif
-            const triggerBtn = event ? event.currentTarget : document.querySelector(`[onclick*="switchTab('${tabName}'"]`);
+            const triggerBtn = event ? event.currentTarget : document.querySelector(`[onclick*="switchTab('${tabName}')"]`);
             if (triggerBtn) triggerBtn.classList.add('active');
 
-            // 5. Update nama header halaman
             const titles = {
                 dashboard: 'Financial Dashboard',
                 pos: 'ESB POS Import',
@@ -725,7 +354,6 @@
             };
             document.getElementById('pageTitle').textContent = titles[tabName] || 'Financial Dashboard';
 
-            // 6. Trigger data fetcher
             if (tabName === 'report') refreshReport();
             else if (tabName === 'inventory') loadInventory();
         }
@@ -765,40 +393,22 @@
             }
         }
 
-        // Ganti fungsi loadData yang lama dengan kode ini di index.html
-function loadData() {
-    showLoading(true);
-    const selectedMonth = parseInt(document.getElementById('monthSelect').value);
-    const selectedYear = parseInt(document.getElementById('yearSelect').value);
+        async function loadData() {
+            const selectedMonth = parseInt(document.getElementById('monthSelect').value);
+            const selectedYear = parseInt(document.getElementById('yearSelect').value);
 
-    google.script.run.withSuccessHandler(function(data) {
-        document.getElementById('totalRevenue').textContent = formatCurrency(data.revenue);
-        document.getElementById('totalExpenses').textContent = formatCurrency(data.expenses);
-        document.getElementById('netProfit').textContent = formatCurrency(data.profit);
-        document.getElementById('marginPct').textContent = (data.margin * 100).toFixed(1) + '%';
-        
-        document.getElementById('inv-target-hpp').textContent = formatCurrency(data.cogs_target);
-        document.getElementById('inv-aktual-hpp').textContent = formatCurrency(data.cogs_aktual);
-        const aktualCard = document.getElementById('aktualHppCard');
-        if(data.cogs_aktual > data.cogs_target) {
-            aktualCard.style.borderLeftColor = 'var(--danger)';
-            aktualCard.style.color = 'var(--danger)';
-        } else {
-            aktualCard.style.borderLeftColor = 'var(--gold)';
-            aktualCard.style.color = '';
+            const data = await apiGet('getData', { bulan: selectedMonth, tahun: selectedYear });
+
+            document.getElementById('totalRevenue').textContent = formatCurrency(data.revenue);
+            document.getElementById('cogsTarget').textContent = formatCurrency(data.cogs_target);
+            document.getElementById('cogsAktual').textContent = formatCurrency(data.cogs_aktual);
+            document.getElementById('cogsVariance').textContent = formatCurrency(data.operational_variance);
+            document.getElementById('netProfit').textContent = formatCurrency(data.profit);
+            document.getElementById('marginPct').textContent = (data.margin * 100).toFixed(1) + '%';
+
+            renderExpenseBreakdown(data.expensesByCategory);
+            renderExpenseList(data.expenses_list);
         }
-        
-        const profitCard = document.getElementById('profitCard');
-        data.profit < 0 ? profitCard.classList.add('loss') : profitCard.classList.remove('loss');
-        
-        loadExpenseBreakdown(data.expensesByCategory);
-        loadExpenseTable(data.expenses_list);
-        showLoading(false);
-    }).withFailureHandler(function(err) {
-        showAlert('Error: ' + err, 'error');
-        showLoading(false);
-    }).getData(selectedMonth, selectedYear);
-}
 
         function renderExpenseBreakdown(breakdown) {
             const tbody = document.getElementById('expenseBreakdownBody');
@@ -817,7 +427,7 @@ function loadData() {
         function renderExpenseList(list) {
             const tbody = document.getElementById('expenseLogBody');
             tbody.innerHTML = '';
-            if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="text-center">Belum ada transaksi</td></tr>'; return; }
+            if (!list || list.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="text-center">Belum ada transaksi</td></tr>'; return; }
             list.forEach(item => {
                 tbody.innerHTML += `<tr>
                     <td>${item.date}</td><td>${item.category}</td><td>${item.description}</td>
@@ -857,8 +467,8 @@ function loadData() {
         }
 
         async function executePosSync() {
-            const m = document.getElementById('monthSelect').value;
-            const y = document.getElementById('yearSelect').value;
+            const m = parseInt(document.getElementById('monthSelect').value);
+            const y = parseInt(document.getElementById('yearSelect').value);
             await apiPost('processPosData', { salesItems: posPayload, totalRevenue: parsedRevenueGross, bulan: m, tahun: y });
             notify('Sinkronisasi POS & Pemotongan Stok BOM Berhasil!');
             document.getElementById('posUploadSummary').style.display = 'none';
@@ -892,8 +502,8 @@ function loadData() {
         }
 
         async function refreshReport() {
-            const m = document.getElementById('monthSelect').value;
-            const y = document.getElementById('yearSelect').value;
+            const m = parseInt(document.getElementById('monthSelect').value);
+            const y = parseInt(document.getElementById('yearSelect').value);
             const data = await apiGet('getData', { bulan: m, tahun: y });
             const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
             document.getElementById('reportPeriod').textContent = 'Periode: ' + months[m-1] + ' ' + y;
