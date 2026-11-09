@@ -159,54 +159,54 @@
             <div class="toast toast-success" id="successAlert"></div>
             <div class="toast toast-error" id="errorAlert"></div>
 
-            <div class="metrics-grid">
-                <div class="card-stat highlight-blue">
-                    <div class="stat-header">
-                        <span class="stat-label">Total Revenue</span>
-                        <span class="badge-trend up" style="background:rgba(255,255,255,0.2); color:#fff;">POS Omzet</span>
-                    </div>
-                    <div class="stat-value" id="totalRevenue">Rp 0</div>
-                    <div class="stat-sub">Pendapatan Kotor Bulanan</div>
-                </div>
-
-                <div class="card-stat">
-                    <div class="stat-header">
-                        <span class="stat-label">HPP Target (70%)</span>
-                        <span class="badge-trend up">Lock Owner</span>
-                    </div>
-                    <div class="stat-value" id="cogsTarget">Rp 0</div>
-                    <div class="stat-sub">Beban Pokok Standar</div>
-                </div>
-
-                <div class="card-stat" id="aktualHppCard">
-                    <div class="stat-header">
-                        <span class="stat-label">Aktual HPP (BOM)</span>
-                        <span class="badge-trend warn">Real Cook</span>
-                    </div>
-                    <div class="stat-value" id="cogsAktual">Rp 0</div>
-                    <div class="stat-sub">Pemotongan Bahan Riil</div>
-                </div>
-
-                <div class="card-stat">
-                    <div class="stat-header">
-                        <span class="stat-label">Beban Waste Bar</span>
-                        <span class="badge-trend down">Varians</span>
-                    </div>
-                    <div class="stat-value" id="cogsVariance" style="color: var(--danger);">Rp 0</div>
-                    <div class="stat-sub">Inefisiensi Operasional</div>
-                </div>
-
-                <div class="card-stat profit-card" id="profitCard">
-                    <div class="stat-header">
-                        <span class="stat-label">Net Profit Bersih</span>
-                        <span class="badge-trend up" id="marginPct">0%</span>
-                    </div>
-                    <div class="stat-value" id="netProfit" style="color: var(--success);">Rp 0</div>
-                    <div class="stat-sub">Laba Bersih Akhir</div>
-                </div>
-            </div>
-
             <div class="tab-content active" id="dashboard-tab">
+                <div class="metrics-grid">
+                    <div class="card-stat highlight-blue">
+                        <div class="stat-header">
+                            <span class="stat-label">Total Revenue</span>
+                            <span class="badge-trend up" style="background:rgba(255,255,255,0.2); color:#fff;">POS Omzet</span>
+                        </div>
+                        <div class="stat-value" id="totalRevenue">Rp 0</div>
+                        <div class="stat-sub">Pendapatan Kotor Bulanan</div>
+                    </div>
+
+                    <div class="card-stat">
+                        <div class="stat-header">
+                            <span class="stat-label">HPP Target (70%)</span>
+                            <span class="badge-trend up">Lock Owner</span>
+                        </div>
+                        <div class="stat-value" id="cogsTarget">Rp 0</div>
+                        <div class="stat-sub">Beban Pokok Standar</div>
+                    </div>
+
+                    <div class="card-stat" id="aktualHppCard">
+                        <div class="stat-header">
+                            <span class="stat-label">Aktual HPP (BOM)</span>
+                            <span class="badge-trend warn">Real Cook</span>
+                        </div>
+                        <div class="stat-value" id="cogsAktual">Rp 0</div>
+                        <div class="stat-sub">Pemotongan Bahan Riil</div>
+                    </div>
+
+                    <div class="card-stat">
+                        <div class="stat-header">
+                            <span class="stat-label">Beban Waste Bar</span>
+                            <span class="badge-trend down">Varians</span>
+                        </div>
+                        <div class="stat-value" id="cogsVariance" style="color: var(--danger);">Rp 0</div>
+                        <div class="stat-sub">Inefisiensi Operasional</div>
+                    </div>
+
+                    <div class="card-stat profit-card" id="profitCard">
+                        <div class="stat-header">
+                            <span class="stat-label">Net Profit Bersih</span>
+                            <span class="badge-trend up" id="marginPct">0%</span>
+                        </div>
+                        <div class="stat-value" id="netProfit" style="color: var(--success);">Rp 0</div>
+                        <div class="stat-sub">Laba Bersih Akhir</div>
+                    </div>
+                </div>
+
                 <div class="panel">
                     <div class="panel-title">Struktur Beban Operasional (OPEX)</div>
                     <table>
@@ -333,53 +333,89 @@
             setTimeout(() => alertEl.classList.remove('show'), 4000);
         }
 
+        const tabTitles = {
+            dashboard: 'Financial Dashboard',
+            pos: 'POS Import',
+            inventory: 'Inventory & BOM',
+            expenses: 'Expenses / OPEX',
+            report: 'P&L Report'
+        };
+
         function switchTab(tab, event) {
             if (event) event.preventDefault();
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
-            
+
             const targetTab = document.getElementById(tab + '-tab');
             if (targetTab) targetTab.classList.add('active');
             if (event && event.currentTarget) event.currentTarget.classList.add('active');
-            
+
+            const titleEl = document.getElementById('pageTitle');
+            if (titleEl && tabTitles[tab]) titleEl.textContent = tabTitles[tab];
+
             if (tab === 'report') refreshReport();
             if (tab === 'inventory') loadInventory();
         }
 
         function changePeriod() { loadData(); }
 
+        // Pengawas: kalau server tidak membalas dalam 30 dtk, tutup overlay + tampilkan pesan
+        let watchdogTimer = null;
+
+        function armWatchdog(label) {
+            disarmWatchdog();
+            watchdogTimer = setTimeout(function() {
+                watchdogTimer = null;
+                showLoading(false);
+                showAlert('⏱️ Server tidak merespons dalam 30 detik (' + label + '). Pastikan code.gs terbaru sudah di-Deploy > Manage deployments > New version, lalu muat ulang halaman.', 'error');
+            }, 30000);
+        }
+
+        function disarmWatchdog() {
+            if (watchdogTimer) { clearTimeout(watchdogTimer); watchdogTimer = null; }
+        }
+
         function loadData() {
             showLoading(true);
+            armWatchdog('memuat dashboard');
             const month = parseInt(document.getElementById('monthSelect').value);
             const year = parseInt(document.getElementById('yearSelect').value);
 
             google.script.run.withSuccessHandler(function(data) {
-                document.getElementById('totalRevenue').textContent = formatCurrency(data.revenue);
-                document.getElementById('netProfit').textContent = formatCurrency(data.profit);
-                document.getElementById('marginPct').textContent = (data.margin * 100).toFixed(1) + '%';
-                
-                document.getElementById('cogsTarget').textContent = formatCurrency(data.cogs_target);
-                document.getElementById('cogsAktual').textContent = formatCurrency(data.cogs_aktual);
-                document.getElementById('cogsVariance').textContent = formatCurrency(data.operational_variance);
-                
-                const aktualCard = document.getElementById('aktualHppCard');
-                if (aktualCard) {
-                    if (data.cogs_aktual > data.cogs_target) {
-                        aktualCard.style.borderLeft = '4px solid var(--danger)';
-                    } else {
-                        aktualCard.style.borderLeft = '4px solid var(--success)';
+                disarmWatchdog();
+                try {
+                    document.getElementById('totalRevenue').textContent = formatCurrency(data.revenue);
+                    document.getElementById('netProfit').textContent = formatCurrency(data.profit);
+                    document.getElementById('marginPct').textContent = (data.margin * 100).toFixed(1) + '%';
+
+                    document.getElementById('cogsTarget').textContent = formatCurrency(data.cogs_target);
+                    document.getElementById('cogsAktual').textContent = formatCurrency(data.cogs_aktual);
+                    document.getElementById('cogsVariance').textContent = formatCurrency(data.operational_variance);
+
+                    const aktualCard = document.getElementById('aktualHppCard');
+                    if (aktualCard) {
+                        if (data.cogs_aktual > data.cogs_target) {
+                            aktualCard.style.borderLeft = '4px solid var(--danger)';
+                        } else {
+                            aktualCard.style.borderLeft = '4px solid var(--success)';
+                        }
                     }
+
+                    const profitCard = document.getElementById('profitCard');
+                    if (profitCard) {
+                        data.profit < 0 ? profitCard.classList.add('loss') : profitCard.classList.remove('loss');
+                    }
+
+                    loadExpenseBreakdown(data.expensesByCategory);
+                    loadExpenseTable(data.expenses_list);
+                } catch (err) {
+                    console.error('[Dashboard] render error:', err, data);
+                    showAlert('Gagal menampilkan dashboard: ' + err.message, 'error');
                 }
-                
-                const profitCard = document.getElementById('profitCard');
-                if (profitCard) {
-                    data.profit < 0 ? profitCard.classList.add('loss') : profitCard.classList.remove('loss');
-                }
-                
-                loadExpenseBreakdown(data.expensesByCategory);
-                loadExpenseTable(data.expenses_list);
                 showLoading(false);
             }).withFailureHandler(function(err) {
+                disarmWatchdog();
+                console.error('[Dashboard] backend error:', err);
                 showAlert('Error: ' + err, 'error');
                 showLoading(false);
             }).getData(month, year);
@@ -459,33 +495,41 @@
 
         function refreshReport() {
             showLoading(true);
+            armWatchdog('laporan P&L');
             const month = parseInt(document.getElementById('monthSelect').value);
             const year = parseInt(document.getElementById('yearSelect').value);
 
             google.script.run.withSuccessHandler(function(data) {
-                const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                disarmWatchdog();
+                try {
+                    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
-                document.getElementById('reportPeriod').textContent = 'Periode: ' + months[month-1] + ' ' + year;
-                document.getElementById('report-totalRevenue').textContent = formatCurrency(data.revenue);
-                document.getElementById('report-cogsTarget').textContent = formatCurrency(data.cogs_target);
-                document.getElementById('report-grossProfit').textContent = formatCurrency(data.revenue - data.cogs_target);
-                
-                let expensesHtml = '';
-                for (let [category, amount] of Object.entries(data.expensesByCategory)) {
-                    if (category !== 'Bahan Baku / COGS' && amount > 0) {
-                        expensesHtml += `<div class="pl-row-item"><span>${category}</span><span class="amount">${formatCurrency(amount)}</span></div>`;
+                    document.getElementById('reportPeriod').textContent = 'Periode: ' + months[month-1] + ' ' + year;
+                    document.getElementById('report-totalRevenue').textContent = formatCurrency(data.revenue);
+                    document.getElementById('report-cogsTarget').textContent = formatCurrency(data.cogs_target);
+                    document.getElementById('report-grossProfit').textContent = formatCurrency(data.revenue - data.cogs_target);
+
+                    let expensesHtml = '';
+                    for (let [category, amount] of Object.entries(data.expensesByCategory || {})) {
+                        if (category !== 'Bahan Baku / COGS' && amount > 0) {
+                            expensesHtml += `<div class="pl-row-item"><span>${category}</span><span class="amount">${formatCurrency(amount)}</span></div>`;
+                        }
                     }
+                    document.getElementById('report-expenses').innerHTML = expensesHtml;
+                    document.getElementById('report-variance').textContent = formatCurrency(data.operational_variance);
+
+                    const netProfitRow = document.getElementById('report-netProfit');
+                    netProfitRow.querySelector('span:first-child').textContent = data.profit >= 0 ? '3. NET OPERATING PROFIT' : '3. NET OPERATING LOSS';
+                    netProfitRow.querySelector('span:last-child').textContent = formatCurrency(Math.abs(data.profit));
+                } catch (err) {
+                    console.error('[P&L] render error:', err, data);
+                    showAlert('Gagal menampilkan laporan P&L: ' + err.message, 'error');
                 }
-                document.getElementById('report-expenses').innerHTML = expensesHtml;
-                document.getElementById('report-variance').textContent = formatCurrency(data.operational_variance);
-                
-                const netProfitRow = document.getElementById('report-netProfit');
-                netProfitRow.querySelector('span:first-child').textContent = data.profit >= 0 ? '3. NET OPERATING PROFIT' : '3. NET OPERATING LOSS';
-                netProfitRow.querySelector('span:last-child').textContent = formatCurrency(Math.abs(data.profit));
-                
                 showLoading(false);
             }).withFailureHandler(function(err) {
-                showAlert('Error: ' + err, 'error');
+                disarmWatchdog();
+                console.error('[P&L] backend error:', err);
+                showAlert('Error laporan P&L: ' + err, 'error');
                 showLoading(false);
             }).getReportData(month, year);
         }
@@ -551,10 +595,12 @@
         function submitPosData(force) {
             if (parsedSalesData.length === 0) return;
             showLoading(true);
+            armWatchdog('impor POS');
             const month = parseInt(document.getElementById('monthSelect').value);
             const year = parseInt(document.getElementById('yearSelect').value);
 
             google.script.run.withSuccessHandler(function(result) {
+                disarmWatchdog();
                 showLoading(false);
 
                 // Backend menolak impor dobel / menunggu konfirmasi timpa
@@ -582,31 +628,46 @@
                 document.getElementById('uploadPreview').style.display = 'none';
                 loadData();
             }).withFailureHandler(function(err) {
+                disarmWatchdog();
+                console.error('[POS] backend error:', err);
                 showAlert('Error: ' + err, 'error');
                 showLoading(false);
             }).processPosData(parsedSalesData, parsedTotalRevenue, month, year, force === true);
         }
 
         function loadInventory() {
+            armWatchdog('inventaris');
             google.script.run.withSuccessHandler(function(data) {
-                const tbody = document.getElementById('inventoryTableBody');
-                if (!tbody) return;
-                tbody.innerHTML = '';
-                if (!data || data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Data inventaris kosong</td></tr>';
-                    return;
+                disarmWatchdog();
+                try {
+                    const tbody = document.getElementById('inventoryTableBody');
+                    if (!tbody) return;
+                    tbody.innerHTML = '';
+                    if (!data || data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Data inventaris kosong</td></tr>';
+                        return;
+                    }
+                    data.forEach(item => {
+                        const isKritis = item.qty < 5 ? `<span style="background: var(--danger); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 8px;">KRITIS</span>` : '';
+                        tbody.innerHTML += `<tr><td>${item.nama} ${isKritis}</td><td>${item.satuan}</td><td>${item.qty}</td><td class="text-right amount">${formatCurrency(item.nilai)}</td></tr>`;
+                    });
+                } catch (err) {
+                    console.error('[Inventory] render error:', err, data);
+                    showAlert('Gagal menampilkan inventaris: ' + err.message, 'error');
                 }
-                data.forEach(item => {
-                    const isKritis = item.qty < 5 ? `<span style="background: var(--danger); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 8px;">KRITIS</span>` : '';
-                    tbody.innerHTML += `<tr><td>${item.nama} ${isKritis}</td><td>${item.satuan}</td><td>${item.qty}</td><td class="text-right amount">${formatCurrency(item.nilai)}</td></tr>`;
-                });
+            }).withFailureHandler(function(err) {
+                disarmWatchdog();
+                console.error('[Inventory] backend error:', err);
+                showAlert('Error inventaris: ' + err, 'error');
             }).getInventoryData();
         }
 
         function loadCategoryOptions() {
             const select = document.getElementById('expenseCategory');
             if (!select) return;
+            armWatchdog('daftar kategori');
             google.script.run.withSuccessHandler(function(cats) {
+                disarmWatchdog();
                 if (!cats || cats.length === 0) return;
                 select.innerHTML = '';
                 cats.forEach(function(cat) {
@@ -615,6 +676,9 @@
                     opt.textContent = cat;
                     select.appendChild(opt);
                 });
+            }).withFailureHandler(function(err) {
+                disarmWatchdog();
+                console.error('[Kategori] backend error:', err);
             }).getExpenseCategories();
         }
 
