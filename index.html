@@ -131,6 +131,8 @@
             <button class="nav-link" onclick="switchTab('pos', event)"><span>📥</span> POS Import</button>
             <button class="nav-link" onclick="switchTab('inventory', event)"><span>📦</span> Inventory & BOM</button>
             <button class="nav-link" onclick="switchTab('expenses', event)"><span>📝</span> Expenses / OPEX</button>
+            <button class="nav-link" onclick="switchTab('sales', event)"><span>🧾</span> Penjualan</button>
+            <button class="nav-link" onclick="switchTab('receivables', event)"><span>💰</span> Piutang & Pelunasan</button>
             <button class="nav-link" onclick="switchTab('report', event)"><span>📄</span> P&L Report</button>
         </div>
     </aside>
@@ -240,10 +242,10 @@
                     <div class="panel-title">Sisa Stok Bahan Baku (Ledger Real-Time)</div>
                     <table>
                         <thead>
-                            <tr><th>Nama Bahan</th><th>Satuan</th><th>Sisa Stok</th><th class="text-right">Valuasi Persediaan</th></tr>
+                            <tr><th>Nama Bahan</th><th>Satuan</th><th class="text-right">HPP / Harga Satuan</th><th>Sisa Stok</th><th class="text-right">Valuasi Persediaan</th></tr>
                         </thead>
                         <tbody id="inventoryTableBody">
-                            <tr><td colspan="4" class="text-center">Memuat data persediaan...</td></tr>
+                            <tr><td colspan="5" class="text-center">Memuat data persediaan...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -288,6 +290,88 @@
                         </thead>
                         <tbody id="expenseTableBody">
                             <tr><td colspan="5" class="text-center">Belum ada catatan transaksi</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-content" id="sales-tab">
+                <div class="panel">
+                    <div class="panel-title">Input Penjualan Manual (Faktur)</div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Tanggal Transaksi</label><input type="date" id="saleDate"></div>
+                        <div class="form-group"><label>Nama Customer</label><input type="text" id="saleCustomer" placeholder="Nama customer"></div>
+                        <div class="form-group"><label>Metode</label><select id="saleMethod"><option>Cash</option><option>Transfer</option></select></div>
+                    </div>
+                    <div class="form-group"><label>Keterangan / Item</label><input type="text" id="saleDesc" placeholder="Contoh: Catering latte 20 cups + snack box"></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Total Penjualan (Rp)</label><input type="number" id="saleTotal" placeholder="Contoh: 850000"></div>
+                        <div class="form-group">
+                            <label>Syarat Bayar</label>
+                            <select id="saleTerm">
+                                <option value="0">CASH (Lunas saat transaksi)</option>
+                                <option value="7">Tempo 7 Hari</option>
+                                <option value="14">Tempo 14 Hari</option>
+                                <option value="30">Tempo 30 Hari</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn-primary" onclick="addSale()">💾 Simpan Penjualan</button>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-title">Daftar Penjualan Periode Ini</div>
+                    <table>
+                        <thead>
+                            <tr><th>Faktur</th><th>Tanggal</th><th>Customer</th><th>Keterangan</th><th class="text-right">Total</th><th class="text-center">Status</th><th class="text-right">Sisa</th></tr>
+                        </thead>
+                        <tbody id="salesTableBody">
+                            <tr><td colspan="7" class="text-center">Memuat data penjualan...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-content" id="receivables-tab">
+                <div class="panel">
+                    <div class="panel-title">Piutang per Customer (Faktur Belum Lunas)</div>
+                    <table>
+                        <thead>
+                            <tr><th>Customer</th><th class="text-center">Jml Faktur</th><th class="text-right">Total Piutang</th><th>Faktur Terlama</th><th class="text-center">Umur (hari)</th></tr>
+                        </thead>
+                        <tbody id="receivablesTableBody">
+                            <tr><td colspan="5" class="text-center">Memuat daftar piutang...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-title">Catat Pelunasan</div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Tanggal Pelunasan</label><input type="date" id="payDate"></div>
+                        <div class="form-group">
+                            <label>Faktur Piutang</label>
+                            <select id="payInvoice" onchange="onPayInvoiceChange()">
+                                <option value="">-- pilih faktur --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Nominal Pelunasan (Rp)</label><input type="number" id="payAmount" placeholder="Otomatis terisi sisa piutang"></div>
+                        <div class="form-group"><label>Metode</label><select id="payMethod"><option>Cash</option><option>Transfer</option></select></div>
+                    </div>
+                    <div class="form-group"><label>Catatan</label><input type="text" id="payNote" placeholder="Opsional"></div>
+                    <button class="btn-primary" onclick="submitPayment()">💵 Proses Pelunasan</button>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-title">Riwayat Pelunasan Terakhir</div>
+                    <table>
+                        <thead>
+                            <tr><th>ID</th><th>Tanggal</th><th>Faktur</th><th>Customer</th><th class="text-right">Nominal</th><th>Metode</th></tr>
+                        </thead>
+                        <tbody id="paymentsTableBody">
+                            <tr><td colspan="6" class="text-center">Belum ada pelunasan</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -338,6 +422,8 @@
             pos: 'POS Import',
             inventory: 'Inventory & BOM',
             expenses: 'Expenses / OPEX',
+            sales: 'Penjualan',
+            receivables: 'Piutang & Pelunasan',
             report: 'P&L Report'
         };
 
@@ -355,6 +441,8 @@
 
             if (tab === 'report') refreshReport();
             if (tab === 'inventory') loadInventory();
+            if (tab === 'sales') loadSales();
+            if (tab === 'receivables') loadReceivables();
         }
 
         function changePeriod() { loadData(); }
@@ -644,12 +732,18 @@
                     if (!tbody) return;
                     tbody.innerHTML = '';
                     if (!data || data.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Data inventaris kosong</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Data inventaris kosong</td></tr>';
                         return;
                     }
                     data.forEach(item => {
                         const isKritis = item.qty < 5 ? `<span style="background: var(--danger); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 8px;">KRITIS</span>` : '';
-                        tbody.innerHTML += `<tr><td>${item.nama} ${isKritis}</td><td>${item.satuan}</td><td>${item.qty}</td><td class="text-right amount">${formatCurrency(item.nilai)}</td></tr>`;
+                        tbody.innerHTML += `<tr>
+                            <td>${item.nama} ${isKritis}</td>
+                            <td>${item.satuan}</td>
+                            <td class="text-right amount">${formatCurrency(item.hargaSatuan)}</td>
+                            <td>${item.qty}</td>
+                            <td class="text-right amount">${formatCurrency(item.nilai)}</td>
+                        </tr>`;
                     });
                 } catch (err) {
                     console.error('[Inventory] render error:', err, data);
@@ -682,10 +776,203 @@
             }).getExpenseCategories();
         }
 
+        // ---------- PENJUALAN ----------
+        let openInvoices = [];
+
+        function loadSales() {
+            armWatchdog('penjualan');
+            showLoading(true);
+            const month = parseInt(document.getElementById('monthSelect').value);
+            const year = parseInt(document.getElementById('yearSelect').value);
+
+            google.script.run.withSuccessHandler(function(data) {
+                disarmWatchdog();
+                showLoading(false);
+                try {
+                    const tbody = document.getElementById('salesTableBody');
+                    tbody.innerHTML = '';
+                    if (!data || data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Belum ada penjualan pada periode ini</td></tr>';
+                        return;
+                    }
+                    data.forEach(s => {
+                        const badge = s.status === 'LUNAS'
+                            ? '<span class="badge-trend up">LUNAS</span>'
+                            : '<span class="badge-trend warn">' + s.status + '</span>';
+                        tbody.innerHTML += `<tr>
+                            <td>${s.faktur}</td>
+                            <td>${s.date}</td>
+                            <td>${s.customer}</td>
+                            <td>${s.keterangan}</td>
+                            <td class="text-right amount">${formatCurrency(s.total)}</td>
+                            <td class="text-center">${badge}</td>
+                            <td class="text-right amount">${formatCurrency(s.sisa)}</td>
+                        </tr>`;
+                    });
+                } catch (err) {
+                    console.error('[Penjualan] render error:', err, data);
+                    showAlert('Gagal menampilkan penjualan: ' + err.message, 'error');
+                }
+            }).withFailureHandler(function(err) {
+                disarmWatchdog();
+                showLoading(false);
+                console.error('[Penjualan] backend error:', err);
+                showAlert('Error penjualan: ' + err, 'error');
+            }).getSales(month, year);
+        }
+
+        function addSale() {
+            const date = document.getElementById('saleDate').value;
+            const customer = document.getElementById('saleCustomer').value.trim();
+            const keterangan = document.getElementById('saleDesc').value.trim();
+            const total = parseFloat(document.getElementById('saleTotal').value) || 0;
+            const term = parseInt(document.getElementById('saleTerm').value) || 0;
+            const metode = document.getElementById('saleMethod').value;
+
+            if (!date || !customer || total <= 0) {
+                showAlert('Isi tanggal, nama customer, dan total penjualan dengan benar', 'error');
+                return;
+            }
+
+            showLoading(true);
+            armWatchdog('simpan penjualan');
+            google.script.run
+                .withSuccessHandler(function(res) {
+                    disarmWatchdog();
+                    showLoading(false);
+                    if (res && res.ok === false) {
+                        showAlert('❌ ' + (res.message || 'Gagal menyimpan penjualan'), 'error');
+                        return;
+                    }
+                    showAlert('✨ Penjualan tersimpan — faktur ' + (res && res.faktur ? res.faktur : '') + (term > 0 ? ' (otomatis masuk piutang)' : ' (LUNAS)'));
+                    document.getElementById('saleCustomer').value = '';
+                    document.getElementById('saleDesc').value = '';
+                    document.getElementById('saleTotal').value = '';
+                    loadSales();
+                })
+                .withFailureHandler(function(err) {
+                    disarmWatchdog();
+                    showLoading(false);
+                    showAlert('Error simpan penjualan: ' + err, 'error');
+                })
+                .addSale(date, customer, keterangan, total, term, metode);
+        }
+
+        // ---------- PIUTANG & PELUNASAN ----------
+        function loadReceivables() {
+            armWatchdog('piutang');
+            showLoading(true);
+            google.script.run.withSuccessHandler(function(data) {
+                disarmWatchdog();
+                showLoading(false);
+                try {
+                    openInvoices = (data && data.invoices) || [];
+
+                    const tbody = document.getElementById('receivablesTableBody');
+                    tbody.innerHTML = '';
+                    if (!data || !data.customers || data.customers.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">🎉 Tidak ada piutang outstanding</td></tr>';
+                    } else {
+                        data.customers.forEach(c => {
+                            tbody.innerHTML += `<tr>
+                                <td>${c.customer}</td>
+                                <td class="text-center">${c.count}</td>
+                                <td class="text-right amount"><strong>${formatCurrency(c.total)}</strong></td>
+                                <td>${c.oldestDate}</td>
+                                <td class="text-center">${c.oldestAge} hari</td>
+                            </tr>`;
+                        });
+                    }
+
+                    const sel = document.getElementById('payInvoice');
+                    sel.innerHTML = '';
+                    if (openInvoices.length === 0) {
+                        sel.innerHTML = '<option value="">Tidak ada faktur outstanding</option>';
+                    } else {
+                        openInvoices.forEach(inv => {
+                            const opt = document.createElement('option');
+                            opt.value = inv.faktur;
+                            opt.textContent = inv.faktur + ' — ' + inv.customer + ' — sisa ' + formatCurrency(inv.sisa);
+                            sel.appendChild(opt);
+                        });
+                        onPayInvoiceChange();
+                    }
+
+                    const payBody = document.getElementById('paymentsTableBody');
+                    payBody.innerHTML = '';
+                    if (!data || !data.payments || data.payments.length === 0) {
+                        payBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Belum ada pelunasan tercatat</td></tr>';
+                    } else {
+                        data.payments.forEach(p => {
+                            payBody.innerHTML += `<tr>
+                                <td>${p.id}</td>
+                                <td>${p.date}</td>
+                                <td>${p.faktur}</td>
+                                <td>${p.customer}</td>
+                                <td class="text-right amount">${formatCurrency(p.amount)}</td>
+                                <td>${p.method}</td>
+                            </tr>`;
+                        });
+                    }
+                } catch (err) {
+                    console.error('[Piutang] render error:', err, data);
+                    showAlert('Gagal menampilkan piutang: ' + err.message, 'error');
+                }
+            }).withFailureHandler(function(err) {
+                disarmWatchdog();
+                showLoading(false);
+                console.error('[Piutang] backend error:', err);
+                showAlert('Error piutang: ' + err, 'error');
+            }).getReceivables();
+        }
+
+        function onPayInvoiceChange() {
+            const sel = document.getElementById('payInvoice');
+            const inv = openInvoices.filter(i => i.faktur === sel.value)[0];
+            if (inv) document.getElementById('payAmount').value = inv.sisa;
+        }
+
+        function submitPayment() {
+            const faktur = document.getElementById('payInvoice').value;
+            const date = document.getElementById('payDate').value;
+            const amount = parseFloat(document.getElementById('payAmount').value) || 0;
+            const method = document.getElementById('payMethod').value;
+            const note = document.getElementById('payNote').value.trim();
+
+            if (!faktur || !date || amount <= 0) {
+                showAlert('Pilih faktur, tanggal, dan nominal pelunasan dengan benar', 'error');
+                return;
+            }
+
+            showLoading(true);
+            armWatchdog('pelunasan');
+            google.script.run
+                .withSuccessHandler(function(res) {
+                    disarmWatchdog();
+                    showLoading(false);
+                    if (res && res.ok === false) {
+                        showAlert('❌ ' + (res.message || 'Gagal memproses pelunasan'), 'error');
+                        return;
+                    }
+                    showAlert('✨ Pelunasan faktur ' + faktur + ' tercatat! Sisa piutang: ' + formatCurrency(res && res.sisaBaru || 0) + ' (' + (res && res.statusBaru || '') + ')');
+                    document.getElementById('payAmount').value = '';
+                    document.getElementById('payNote').value = '';
+                    loadReceivables();
+                })
+                .withFailureHandler(function(err) {
+                    disarmWatchdog();
+                    showLoading(false);
+                    showAlert('Error pelunasan: ' + err, 'error');
+                })
+                .addPayment(faktur, date, amount, method, note);
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const today = new Date().toISOString().split('T')[0];
-            const dateInput = document.getElementById('expenseDate');
-            if (dateInput) dateInput.value = today;
+            ['expenseDate', 'saleDate', 'payDate'].forEach(function(id) {
+                const el = document.getElementById(id);
+                if (el) el.value = today;
+            });
             loadCategoryOptions();
             loadData();
         });
