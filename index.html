@@ -66,6 +66,10 @@
         .card-stat.highlight-blue { background: linear-gradient(135deg, #868CFF 0%, #4318FF 100%); color: #FFFFFF; }
         .card-stat.highlight-blue .stat-label, .card-stat.highlight-blue .stat-sub { color: rgba(255, 255, 255, 0.8); }
         .card-stat.highlight-blue .stat-value { color: #FFFFFF; }
+        .card-stat.loss { background: linear-gradient(135deg, #F1797B 0%, #EE5D50 100%); box-shadow: 0px 18px 40px rgba(238, 93, 80, 0.3); }
+        .card-stat.loss .stat-label, .card-stat.loss .stat-sub { color: rgba(255, 255, 255, 0.85); }
+        .card-stat.loss .badge-trend { background: rgba(255, 255, 255, 0.2); color: #FFFFFF; }
+        .card-stat.loss .stat-value { color: #FFFFFF !important; }
         .stat-header { display: flex; justify-content: space-between; align-items: center; }
         .badge-trend { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
         .badge-trend.up { background: var(--success-light); color: var(--success); }
@@ -351,7 +355,6 @@
 
             google.script.run.withSuccessHandler(function(data) {
                 document.getElementById('totalRevenue').textContent = formatCurrency(data.revenue);
-                document.getElementById('totalExpenses').textContent = formatCurrency(data.expenses);
                 document.getElementById('netProfit').textContent = formatCurrency(data.profit);
                 document.getElementById('marginPct').textContent = (data.margin * 100).toFixed(1) + '%';
                 
@@ -387,7 +390,9 @@
             if (!tbody) return;
             tbody.innerHTML = '';
             let total = 0;
-            for (let amount of Object.values(expenses)) total += amount;
+            for (let [category, amount] of Object.entries(expenses)) {
+                if (category !== 'Bahan Baku / COGS') total += amount;
+            }
             for (let [category, amount] of Object.entries(expenses)) {
                 if (category === 'Bahan Baku / COGS') continue;
                 const pct = total > 0 ? ((amount / total) * 100).toFixed(1) : 0;
@@ -543,20 +548,43 @@
             reader.readAsArrayBuffer(file);
         }
 
-        function submitPosData() {
+        function submitPosData(force) {
             if (parsedSalesData.length === 0) return;
             showLoading(true);
             const month = parseInt(document.getElementById('monthSelect').value);
             const year = parseInt(document.getElementById('yearSelect').value);
 
-            google.script.run.withSuccessHandler(function() {
-                showAlert('✨ Data POS tersimpan & Stok BOM terpotong otomatis!');
+            google.script.run.withSuccessHandler(function(result) {
+                showLoading(false);
+
+                // Backend menolak impor dobel / menunggu konfirmasi timpa
+                if (result && result.status === 'conflict' && !force) {
+                    const ok = confirm('Periode ini sudah pernah diimpor dengan data POS yang berbeda.\n\nImpor ulang akan:\n' +
+                        '• Menimpa omzet & HPP bulan ini sesuai file baru\n' +
+                        '• Mengembalikan potongan stok lama, lalu memotong ulang sesuai file baru\n\n' +
+                        'Lanjutkan impor dan timpa data?');
+                    if (ok) submitPosData(true);
+                    return;
+                }
+
+                if (result && result.status === 'dup') {
+                    showAlert('ℹ️ File POS yang sama sudah pernah diimpor untuk periode ini. Stok tidak dipotong ulang.', 'error');
+                    document.getElementById('uploadPreview').style.display = 'none';
+                    return;
+                }
+
+                if (result && result.status === 'error') {
+                    showAlert('❌ Gagal menyimpan POS: ' + (result.message || 'error tidak diketahui'), 'error');
+                    return;
+                }
+
+                showAlert(result && result.status === 'overwritten' ? '✨ Data POS diperbarui & potongan stok dikoreksi!' : '✨ Data POS tersimpan & Stok BOM terpotong otomatis!');
                 document.getElementById('uploadPreview').style.display = 'none';
                 loadData();
             }).withFailureHandler(function(err) {
                 showAlert('Error: ' + err, 'error');
                 showLoading(false);
-            }).processPosData(parsedSalesData, parsedTotalRevenue, month, year);
+            }).processPosData(parsedSalesData, parsedTotalRevenue, month, year, force === true);
         }
 
         function loadInventory() {
@@ -570,15 +598,31 @@
                 }
                 data.forEach(item => {
                     const isKritis = item.qty < 5 ? `<span style="background: var(--danger); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 8px;">KRITIS</span>` : '';
-                    tbody.innerHTML += `<tr><td>${item.nama} ${isKritis}</td><td>${item.qty}</td><td>${item.satuan}</td><td class="text-right amount">${formatCurrency(item.nilai)}</td></tr>`;
+                    tbody.innerHTML += `<tr><td>${item.nama} ${isKritis}</td><td>${item.satuan}</td><td>${item.qty}</td><td class="text-right amount">${formatCurrency(item.nilai)}</td></tr>`;
                 });
             }).getInventoryData();
+        }
+
+        function loadCategoryOptions() {
+            const select = document.getElementById('expenseCategory');
+            if (!select) return;
+            google.script.run.withSuccessHandler(function(cats) {
+                if (!cats || cats.length === 0) return;
+                select.innerHTML = '';
+                cats.forEach(function(cat) {
+                    const opt = document.createElement('option');
+                    opt.value = cat;
+                    opt.textContent = cat;
+                    select.appendChild(opt);
+                });
+            }).getExpenseCategories();
         }
 
         document.addEventListener('DOMContentLoaded', function() {
             const today = new Date().toISOString().split('T')[0];
             const dateInput = document.getElementById('expenseDate');
             if (dateInput) dateInput.value = today;
+            loadCategoryOptions();
             loadData();
         });
     </script>
