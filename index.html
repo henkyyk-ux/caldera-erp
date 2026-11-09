@@ -531,7 +531,7 @@
                 console.error('[P&L] backend error:', err);
                 showAlert('Error laporan P&L: ' + err, 'error');
                 showLoading(false);
-            }).getReportData(month, year);
+            }).getData(month, year);
         }
 
         function printReport() { window.print(); }
